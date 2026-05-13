@@ -56,7 +56,7 @@ function WritingEntryPage() {
         </p>
 
         <div className="mt-14 space-y-7 font-serif text-xl leading-relaxed text-ink/85">
-          {entry.body.map((p, i) => (
+          {entry.body.map((p: string, i: number) => (
             <p key={i} className="text-pretty">{p}</p>
           ))}
         </div>
