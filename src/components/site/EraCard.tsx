@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Era } from "@/content/eras";
+import type { Era } from "@/lib/db";
 import { ImagePlaceholder } from "./ImagePlaceholder";
 
 export function EraCard({ era, defaultOpen = false }: { era: Era; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <article id={era.id} className="border-t border-ink/10 py-10 md:py-14 scroll-mt-24">
+    <article id={era.slug} className="border-t border-ink/10 py-10 md:py-14 scroll-mt-24">
       <button
         onClick={() => setOpen((v) => !v)}
         className="w-full text-left grid grid-cols-12 gap-6 items-baseline group"
@@ -47,25 +47,24 @@ export function EraCard({ era, defaultOpen = false }: { era: Era; defaultOpen?: 
 
                 <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {era.highlights.map((h) => (
-                    <div
-                      key={h}
-                      className="border-l-2 border-earth/40 pl-4 py-1 text-sm text-ink/75"
-                    >
+                    <div key={h} className="border-l-2 border-earth/40 pl-4 py-1 text-sm text-ink/75">
                       {h}
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {era.artifacts.map((a) => (
-                    <div key={a.caption} className="space-y-2">
-                      <ImagePlaceholder caption={a.caption} aspect="aspect-[4/5]" />
-                      <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-ink/45">
-                        {a.caption}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                {era.featured_image_url ? (
+                  <img
+                    src={era.featured_image_url}
+                    alt={era.title}
+                    loading="lazy"
+                    className="mt-10 w-full aspect-[16/9] object-cover rounded-sm"
+                  />
+                ) : (
+                  <div className="mt-10">
+                    <ImagePlaceholder caption={`${era.title} — featured image`} aspect="aspect-[16/9]" />
+                  </div>
+                )}
 
                 <div className="mt-10 border-t border-ink/10 pt-6">
                   <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-clay mb-4">

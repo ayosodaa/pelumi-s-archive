@@ -1,15 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import type { NavItem } from "@/lib/db";
 
-const links = [
-  { to: "/journey", label: "The Journey" },
-  { to: "/lab", label: "The Lab" },
-  { to: "/junkyard", label: "Junkyard" },
-  { to: "/writing", label: "Writing" },
-  { to: "/about", label: "About" },
-] as const;
-
-export function SiteNav({ overHero = false }: { overHero?: boolean }) {
+export function SiteNav({
+  overHero = false,
+  nav = [],
+  brand = "O. Samuel",
+}: {
+  overHero?: boolean;
+  nav?: NavItem[];
+  brand?: string | null;
+}) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -19,6 +20,14 @@ export function SiteNav({ overHero = false }: { overHero?: boolean }) {
   }, []);
 
   const transparent = overHero && !scrolled;
+  const fallback: NavItem[] = [
+    { id: "1", label: "The Journey", url: "/journey", location: "header" },
+    { id: "2", label: "The Lab", url: "/lab", location: "header" },
+    { id: "3", label: "Junkyard", url: "/junkyard", location: "header" },
+    { id: "4", label: "Writing", url: "/writing", location: "header" },
+    { id: "5", label: "About", url: "/about", location: "header" },
+  ];
+  const items = nav.length ? nav : fallback;
 
   return (
     <nav
@@ -30,26 +39,18 @@ export function SiteNav({ overHero = false }: { overHero?: boolean }) {
     >
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
         <Link to="/" className="font-serif italic text-lg tracking-tight">
-          O. Samuel
+          {brand ?? "O. Samuel"}
         </Link>
         <div className="hidden md:flex items-center gap-10 text-[11px] uppercase tracking-[0.22em] font-medium">
-          {links.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              activeProps={{ className: "text-clay" }}
-              className="hover:text-clay transition-colors"
-            >
+          {items.map((l) => (
+            <a key={l.id} href={l.url} className="hover:text-clay transition-colors">
               {l.label}
-            </Link>
+            </a>
           ))}
         </div>
-        <Link
-          to="/about"
-          className="md:hidden text-[11px] uppercase tracking-[0.22em] font-medium"
-        >
+        <a href="/about" className="md:hidden text-[11px] uppercase tracking-[0.22em] font-medium">
           Menu
-        </Link>
+        </a>
       </div>
     </nav>
   );
