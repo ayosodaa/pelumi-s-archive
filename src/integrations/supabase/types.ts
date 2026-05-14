@@ -14,7 +14,511 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      galleries: {
+        Row: {
+          created_at: string
+          id: string
+          linked_section: string | null
+          published: boolean
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          linked_section?: string | null
+          published?: boolean
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          linked_section?: string | null
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gallery_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          gallery_id: string
+          id: string
+          image_path: string
+          sort_order: number
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          gallery_id: string
+          id?: string
+          image_path: string
+          sort_order?: number
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          gallery_id?: string
+          id?: string
+          image_path?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_images_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "galleries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journey_eras: {
+        Row: {
+          created_at: string
+          description: string | null
+          featured_image_path: string | null
+          highlights: string[]
+          id: string
+          kicker: string | null
+          lessons: string[]
+          number: string | null
+          published: boolean
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+          visual_theme: string | null
+          years: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          featured_image_path?: string | null
+          highlights?: string[]
+          id?: string
+          kicker?: string | null
+          lessons?: string[]
+          number?: string | null
+          published?: boolean
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+          visual_theme?: string | null
+          years?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          featured_image_path?: string | null
+          highlights?: string[]
+          id?: string
+          kicker?: string | null
+          lessons?: string[]
+          number?: string | null
+          published?: boolean
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          visual_theme?: string | null
+          years?: string | null
+        }
+        Relationships: []
+      }
+      junkyard: {
+        Row: {
+          category: string | null
+          created_at: string
+          date_label: string | null
+          id: string
+          kind: string | null
+          lesson: string | null
+          project_name: string
+          published: boolean
+          rotation: number | null
+          sketches: string[]
+          slug: string
+          sort_order: number
+          updated_at: string
+          what: string | null
+          why_failed: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          date_label?: string | null
+          id?: string
+          kind?: string | null
+          lesson?: string | null
+          project_name: string
+          published?: boolean
+          rotation?: number | null
+          sketches?: string[]
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          what?: string | null
+          why_failed?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          date_label?: string | null
+          id?: string
+          kind?: string | null
+          lesson?: string | null
+          project_name?: string
+          published?: boolean
+          rotation?: number | null
+          sketches?: string[]
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          what?: string | null
+          why_failed?: string | null
+        }
+        Relationships: []
+      }
+      navigation: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          location: string
+          published: boolean
+          sort_order: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          location?: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          location?: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      podcast_media: {
+        Row: {
+          categories: string[]
+          created_at: string
+          description: string | null
+          embed_url: string | null
+          id: string
+          published: boolean
+          sort_order: number
+          thumbnail_path: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          categories?: string[]
+          created_at?: string
+          description?: string | null
+          embed_url?: string | null
+          id?: string
+          published?: boolean
+          sort_order?: number
+          thumbnail_path?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          categories?: string[]
+          created_at?: string
+          description?: string | null
+          embed_url?: string | null
+          id?: string
+          published?: boolean
+          sort_order?: number
+          thumbnail_path?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          featured_image_path: string | null
+          id: string
+          lessons_learned: string[]
+          links: Json
+          outcomes: string[]
+          published: boolean
+          related_era_id: string | null
+          slug: string
+          sort_order: number
+          status: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          featured_image_path?: string | null
+          id?: string
+          lessons_learned?: string[]
+          links?: Json
+          outcomes?: string[]
+          published?: boolean
+          related_era_id?: string | null
+          slug: string
+          sort_order?: number
+          status?: string | null
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          featured_image_path?: string | null
+          id?: string
+          lessons_learned?: string[]
+          links?: Json
+          outcomes?: string[]
+          published?: boolean
+          related_era_id?: string | null
+          slug?: string
+          sort_order?: number
+          status?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_related_era_id_fkey"
+            columns: ["related_era_id"]
+            isOneToOne: false
+            referencedRelation: "journey_eras"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_links: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          label: string
+          published: boolean
+          sort_order: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          label?: string
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      tools_lab: {
+        Row: {
+          category: string | null
+          code: string | null
+          created_at: string
+          description: string | null
+          downloadable_resources: Json
+          format: string | null
+          id: string
+          published: boolean
+          screenshots: string[]
+          slug: string
+          sort_order: number
+          tool_name: string
+          tool_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          code?: string | null
+          created_at?: string
+          description?: string | null
+          downloadable_resources?: Json
+          format?: string | null
+          id?: string
+          published?: boolean
+          screenshots?: string[]
+          slug: string
+          sort_order?: number
+          tool_name: string
+          tool_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          code?: string | null
+          created_at?: string
+          description?: string | null
+          downloadable_resources?: Json
+          format?: string | null
+          id?: string
+          published?: boolean
+          screenshots?: string[]
+          slug?: string
+          sort_order?: number
+          tool_name?: string
+          tool_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      website_settings: {
+        Row: {
+          about_text: string | null
+          contact_email: string | null
+          created_at: string
+          footer_text: string | null
+          hero_image_path: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
+          id: string
+          seo_description: string | null
+          seo_og_image: string | null
+          seo_title: string | null
+          site_short: string | null
+          site_title: string | null
+          subtagline: string | null
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          about_text?: string | null
+          contact_email?: string | null
+          created_at?: string
+          footer_text?: string | null
+          hero_image_path?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          seo_description?: string | null
+          seo_og_image?: string | null
+          seo_title?: string | null
+          site_short?: string | null
+          site_title?: string | null
+          subtagline?: string | null
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          about_text?: string | null
+          contact_email?: string | null
+          created_at?: string
+          footer_text?: string | null
+          hero_image_path?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          seo_description?: string | null
+          seo_og_image?: string | null
+          seo_title?: string | null
+          site_short?: string | null
+          site_title?: string | null
+          subtagline?: string | null
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      writing: {
+        Row: {
+          category: string | null
+          cover_image_path: string | null
+          created_at: string
+          excerpt: string | null
+          full_content: string | null
+          id: string
+          publish_date: string | null
+          published: boolean
+          reading_minutes: number | null
+          slug: string
+          sort_order: number
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          cover_image_path?: string | null
+          created_at?: string
+          excerpt?: string | null
+          full_content?: string | null
+          id?: string
+          publish_date?: string | null
+          published?: boolean
+          reading_minutes?: number | null
+          slug: string
+          sort_order?: number
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          cover_image_path?: string | null
+          created_at?: string
+          excerpt?: string | null
+          full_content?: string | null
+          id?: string
+          publish_date?: string | null
+          published?: boolean
+          reading_minutes?: number | null
+          slug?: string
+          sort_order?: number
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
