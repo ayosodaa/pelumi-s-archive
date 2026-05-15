@@ -27,7 +27,7 @@ function JunkyardPage() {
       </header>
       <section className="px-6 md:px-12 max-w-[1400px] mx-auto pb-24 md:pb-32">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 text-ink">
-          {items.map((j) => <JunkCard key={j.id} item={j} />)}
+          {(items as JunkItem[]).map((j) => <JunkCard key={j.id} item={j} />)}
         </div>
       </section>
       <div className="bg-paper text-ink">
