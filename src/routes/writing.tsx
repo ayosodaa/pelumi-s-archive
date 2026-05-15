@@ -9,7 +9,15 @@ export const Route = createFileRoute("/writing")({
     const [writings, eras, nav, socials, settings] = await Promise.all([listWriting(), listEras(), getNavigation("header"), getSocialLinks(), getSettings()]);
     return { writings, eras, nav, socials, settings };
   },
-  head: () => ({ meta: [{ title: "Writing & Media — Oluwapelumi Samuel" }] }),
+  head: () => ({
+    meta: [
+      { title: "Writing & Media — Oluwapelumi Samuel" },
+      { name: "description", content: "Essays, reflections, and poetry — the parallel practice that keeps the systems work honest." },
+      { property: "og:title", content: "Writing & Media" },
+      { property: "og:description", content: "Essays, reflections, and poetry — the parallel practice that keeps the systems work honest." },
+    ],
+    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/writing" }],
+  }),
   errorComponent: ({ error }) => <div className="p-12">Failed: {error.message}</div>,
   component: WritingPage,
 });

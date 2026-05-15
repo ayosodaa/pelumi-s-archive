@@ -9,7 +9,15 @@ export const Route = createFileRoute("/about")({
     const [settings, socials, eras, nav] = await Promise.all([getSettings(), getSocialLinks(), listEras(), getNavigation("header")]);
     return { settings, socials, eras, nav };
   },
-  head: () => ({ meta: [{ title: "About — Oluwapelumi Samuel" }] }),
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: `About — ${loaderData?.settings.site_title ?? "Oluwapelumi Samuel"}` },
+      { name: "description", content: (loaderData?.settings.about_text ?? "").slice(0, 160) },
+      { property: "og:title", content: `About — ${loaderData?.settings.site_title ?? ""}` },
+      { property: "og:description", content: (loaderData?.settings.about_text ?? "").slice(0, 160) },
+    ],
+    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/about" }],
+  }),
   errorComponent: ({ error }) => <div className="p-12">Failed: {error.message}</div>,
   component: AboutPage,
 });

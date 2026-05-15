@@ -1,79 +1,54 @@
-# Supabase-Driven Living Archive — v2 Plan
 
-## Note on stack
-Your brief says Next.js, but this project is built on **TanStack Start** (React 19 + Vite, SSR-capable, file-based routing). It supports everything you need — dynamic routes, SSR, ISR-equivalent caching, realtime — and switching to Next.js would mean rebuilding v1 from scratch. I'll proceed on TanStack Start unless you'd rather restart.
+# Finish the Supabase-driven setup
 
-You manage everything in Supabase Studio (Table Editor + Storage). No custom admin UI is built.
+Goal: bring the site to a state where every page is dynamic, every shareable route has proper SEO, all v2 routes exist, and the production build is green. You'll handle image uploads yourself in Supabase Studio.
 
----
+## 1. Seed default rows
 
-## 1. Enable Lovable Cloud
-Provisions Supabase (DB + Storage + Auth) and wires env vars automatically. You'll edit content in the Supabase Studio dashboard.
+Insert baseline rows so the site stops relying on hardcoded fallbacks and you can edit everything from Supabase.
 
-## 2. Database schema (migrations)
+- **`website_settings`** (single row): site_title, site_short, tagline, subtagline, hero_title, hero_subtitle, about_text, contact_email, footer_text, seo_title, seo_description. `hero_image_path` left null until you upload.
+- **`navigation`** (header): The Journey, The Lab, Junkyard, Writing, Podcast, About — sort_order 1–6.
+- **`navigation`** (footer): mirrors of the section links.
+- **`social_links`**: 3–4 placeholders (Twitter/X, LinkedIn, GitHub, Email) you can rename/edit later.
 
-Tables, all with `id uuid pk`, `created_at`, `updated_at`, `published boolean default true`, `sort_order int`:
+## 2. Build the missing routes
 
-- **website_settings** (singleton row): site_title, hero_title, hero_subtitle, hero_image_path, about_text, contact_email, footer_text, seo_title, seo_description, seo_og_image
-- **social_links**: label, url, icon, sort_order
-- **navigation**: label, url, sort_order, location ('header'|'footer')
-- **journey_eras**: number, title, slug (unique), years, kicker, description, highlights (text[]), lessons (text[]), featured_image_path, visual_theme, sort_order
-- **projects**: title, slug, description, category, tags (text[]), featured_image_path, related_era_id (fk), links (jsonb), outcomes (text[]), lessons_learned (text[]), status, sort_order
-- **writing**: title, slug, excerpt, full_content (markdown), category, cover_image_path, publish_date, tags (text[])
-- **podcast_media**: title, description, embed_url, thumbnail_path, categories (text[])
-- **tools_lab**: code, tool_name, slug, description, format, screenshots (text[]), tool_url, downloadable_resources (jsonb), category
-- **junkyard**: project_name, slug, kind, date_label, what, why_failed, lesson, sketches (text[]), category, rotation
-- **galleries**: title, slug, linked_section, sort_order
-- **gallery_images**: gallery_id (fk), image_path, caption, sort_order
+All read from Supabase via `src/lib/db.ts` (extended where needed) and reuse the existing Curatorial Archive components.
 
-**RLS**: enable on all. One public SELECT policy per table: `USING (published = true)`. No insert/update/delete policies — edits happen in Studio with the service role.
+- **`/projects/$slug`** — full project page: hero, description, tags, status, outcomes, lessons, links, related era. Pulls from `projects`.
+- **`/lab/$slug`** — full tool page: description, format, screenshots gallery, tool URL, downloadable resources. Pulls from `tools_lab`.
+- **`/junkyard/$slug`** — full failure post-mortem: kind, date, what, why it failed, lesson, sketches gallery. Pulls from `junkyard`.
+- **`/podcast`** — index of `podcast_media` entries with embeds + thumbnails. List-only, no detail page.
+- **Gallery viewer** — shared `<Gallery slug="...">` component that fetches `galleries` + `gallery_images` and renders a masonry grid with a lightbox. Usable from any route by slug.
 
-**Storage buckets** (public): `hero`, `eras`, `projects`, `writing`, `podcast`, `tools`, `junkyard`, `galleries`, `downloads`. Public-read storage policy on each.
+## 3. Per-route SEO
 
-## 3. Seed data
-Migration seeds existing v1 content (7 eras, ~9 tools, junkyard, writing, settings, socials) so the site doesn't go blank on switchover. Hero image gets uploaded to the `hero` bucket.
+Add a `head()` to every route that derives title/description/og from loader data, falling back to `website_settings`.
 
-## 4. Server functions (data layer)
-Replace `src/content/*.ts` reads with `createServerFn` handlers in `src/lib/`:
-- `getWebsiteSettings`, `getNavigation`, `getSocialLinks`
-- `listEras`, `getEraBySlug`
-- `listProjects`, `getProjectBySlug`
-- `listWriting`, `getWritingBySlug`
-- `listTools`, `getToolBySlug`
-- `listJunkyard`, `getJunkyardBySlug`
-- `listPodcast`, `getGalleryBySlug`
+- Static routes (`/`, `/journey`, `/lab`, `/junkyard`, `/writing`, `/about`, `/podcast`): title pattern `"<Section> — <site_title>"`, description from a section blurb or the settings default.
+- Dynamic routes (`/writing/$slug`, `/projects/$slug`, `/lab/$slug`, `/junkyard/$slug`): title from the entry, description from excerpt/description, `og:image` from the entry's image when set, `og:type: article`.
+- Add `<link rel="canonical">` only on leaf routes (root keeps defaults — see TanStack canonical dedupe rule).
+- Root route gets sitewide defaults + `og:site_name` + a JSON-LD `WebSite` block.
 
-Each resolves storage paths to public URLs via `supabase.storage.from(bucket).getPublicUrl()`.
+## 4. Verify the build
 
-## 5. Dynamic routes
-Refactor existing routes + add new dynamic ones:
-- `/` — settings + featured eras/writing/projects
-- `/journey` + `/journey/$slug`
-- `/lab` + `/lab/$slug`
-- `/junkyard` + `/junkyard/$slug`
-- `/writing` + `/writing/$slug` (already dynamic)
-- `/projects` + `/projects/$slug` (new)
-- `/podcast` (new)
-- `/about` — pulls from `website_settings.about_text`
+- Run a clean typecheck/build, fix any remaining TS errors from the new routes.
+- Smoke-test each new route renders with the seeded (often empty) tables — empty states must look intentional, not broken.
+- Confirm `<DbImage>`/`ImagePlaceholder` falls back gracefully when `*_image_path` is null so you can upload images at your own pace.
 
-Loaders call server fns via TanStack Query (`ensureQueryData` + `useSuspenseQuery`) with short `staleTime` so Studio edits appear on next navigation/refresh. Optional realtime subscription on the homepage for live updates.
+## Out of scope
 
-## 6. Media handling
-Shared `<DbImage>` component: takes a storage path, renders responsive `<img>` with `loading="lazy"`, blur-up placeholder, optional lightbox. Galleries use masonry layout. Footer, nav, socials all driven from DB.
+- No admin UI (you edit in Supabase Studio).
+- No image uploads from my side — you'll upload via Studio and the site will pick them up automatically.
+- No Netlify deploy step (separate task).
 
-## 7. SEO
-Per-route `head()` reads SEO fields from the matching DB record (writing/projects/eras/tools); falls back to `website_settings` defaults. og:image derived from each entry's cover image.
+## Technical notes
 
-## 8. Out of scope (intentional)
-- No admin UI, no auth gating (you edit in Supabase Studio)
-- No Stripe/payments, no comments
-- Netlify deployment: this Lovable project deploys via Lovable's hosting; custom domain works there. If you want Netlify specifically, that's a separate export step after launch.
+- Detail-route loaders call `getProject(slug)` / `getTool(slug)` / `getJunk(slug)` (the latter two need to be added to `src/lib/db.ts`).
+- New `listPodcast()` and `getGallery(slug)` fetchers in `src/lib/db.ts`.
+- All loaders use `Route.useLoaderData()` with explicit type casts to keep TS happy (matches the fix already applied in v2).
+- `staleTime: 0` on the router (already set) so Studio edits show on next navigation; no extra realtime wiring.
+- Detail routes throw `notFound()` when the slug doesn't resolve, with a `notFoundComponent` per route.
 
----
-
-## What you do after I build
-1. Open Supabase Studio (link surfaced in chat)
-2. Edit any row in any table → site updates on next load
-3. Drag images into Storage buckets → reference the path in the relevant table row
-
-Approve and I'll execute: enable Cloud → migrations + seed → server fns → refactor routes → swap content imports → verify.
+After approval I'll execute in this order: seed inserts → db.ts fetchers → new routes → SEO heads → build verification.

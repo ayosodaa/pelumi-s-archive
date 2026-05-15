@@ -263,6 +263,61 @@ export async function getProject(slug: string): Promise<Project | null> {
   return all.find((p) => p.slug === slug) ?? null;
 }
 
+// ---------- podcast ----------
+export type PodcastItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  embed_url: string | null;
+  thumbnail_url: string | null;
+  categories: string[];
+};
+
+export async function listPodcast(): Promise<PodcastItem[]> {
+  const { data } = await supabase
+    .from("podcast_media")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order");
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    title: r.title,
+    description: r.description,
+    embed_url: r.embed_url,
+    thumbnail_url: publicUrl("podcast", r.thumbnail_path),
+    categories: (r.categories as string[]) ?? [],
+  }));
+}
+
+// ---------- gallery ----------
+export type GalleryImage = { id: string; url: string; caption: string | null };
+export type Gallery = { id: string; slug: string; title: string; images: GalleryImage[] };
+
+export async function getGallery(slug: string): Promise<Gallery | null> {
+  const { data: g } = await supabase
+    .from("galleries")
+    .select("id,slug,title")
+    .eq("slug", slug)
+    .eq("published", true)
+    .maybeSingle();
+  if (!g) return null;
+  const { data: imgs } = await supabase
+    .from("gallery_images")
+    .select("id,image_path,caption,sort_order")
+    .eq("gallery_id", g.id)
+    .order("sort_order");
+  return {
+    id: g.id,
+    slug: g.slug,
+    title: g.title,
+    images: (imgs ?? []).map((i) => ({
+      id: i.id,
+      url: publicUrl("galleries", i.image_path)!,
+      caption: i.caption,
+    })),
+  };
+}
+
 // Aggregate fetcher for the homepage
 export async function getHomeData() {
   const [settings, eras, tools, junk, writing] = await Promise.all([

@@ -10,16 +10,25 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WritingRouteImport } from './routes/writing'
+import { Route as PodcastRouteImport } from './routes/podcast'
 import { Route as LabRouteImport } from './routes/lab'
 import { Route as JunkyardRouteImport } from './routes/junkyard'
 import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WritingSlugRouteImport } from './routes/writing.$slug'
+import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as LabSlugRouteImport } from './routes/lab.$slug'
+import { Route as JunkyardSlugRouteImport } from './routes/junkyard.$slug'
 
 const WritingRoute = WritingRouteImport.update({
   id: '/writing',
   path: '/writing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodcastRoute = PodcastRouteImport.update({
+  id: '/podcast',
+  path: '/podcast',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LabRoute = LabRouteImport.update({
@@ -52,23 +61,46 @@ const WritingSlugRoute = WritingSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => WritingRoute,
 } as any)
+const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
+  id: '/projects/$slug',
+  path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabSlugRoute = LabSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LabRoute,
+} as any)
+const JunkyardSlugRoute = JunkyardSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => JunkyardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/journey': typeof JourneyRoute
-  '/junkyard': typeof JunkyardRoute
-  '/lab': typeof LabRoute
+  '/junkyard': typeof JunkyardRouteWithChildren
+  '/lab': typeof LabRouteWithChildren
+  '/podcast': typeof PodcastRoute
   '/writing': typeof WritingRouteWithChildren
+  '/junkyard/$slug': typeof JunkyardSlugRoute
+  '/lab/$slug': typeof LabSlugRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
   '/writing/$slug': typeof WritingSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/journey': typeof JourneyRoute
-  '/junkyard': typeof JunkyardRoute
-  '/lab': typeof LabRoute
+  '/junkyard': typeof JunkyardRouteWithChildren
+  '/lab': typeof LabRouteWithChildren
+  '/podcast': typeof PodcastRoute
   '/writing': typeof WritingRouteWithChildren
+  '/junkyard/$slug': typeof JunkyardSlugRoute
+  '/lab/$slug': typeof LabSlugRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
   '/writing/$slug': typeof WritingSlugRoute
 }
 export interface FileRoutesById {
@@ -76,9 +108,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/journey': typeof JourneyRoute
-  '/junkyard': typeof JunkyardRoute
-  '/lab': typeof LabRoute
+  '/junkyard': typeof JunkyardRouteWithChildren
+  '/lab': typeof LabRouteWithChildren
+  '/podcast': typeof PodcastRoute
   '/writing': typeof WritingRouteWithChildren
+  '/junkyard/$slug': typeof JunkyardSlugRoute
+  '/lab/$slug': typeof LabSlugRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
   '/writing/$slug': typeof WritingSlugRoute
 }
 export interface FileRouteTypes {
@@ -89,7 +125,11 @@ export interface FileRouteTypes {
     | '/journey'
     | '/junkyard'
     | '/lab'
+    | '/podcast'
     | '/writing'
+    | '/junkyard/$slug'
+    | '/lab/$slug'
+    | '/projects/$slug'
     | '/writing/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -98,7 +138,11 @@ export interface FileRouteTypes {
     | '/journey'
     | '/junkyard'
     | '/lab'
+    | '/podcast'
     | '/writing'
+    | '/junkyard/$slug'
+    | '/lab/$slug'
+    | '/projects/$slug'
     | '/writing/$slug'
   id:
     | '__root__'
@@ -107,7 +151,11 @@ export interface FileRouteTypes {
     | '/journey'
     | '/junkyard'
     | '/lab'
+    | '/podcast'
     | '/writing'
+    | '/junkyard/$slug'
+    | '/lab/$slug'
+    | '/projects/$slug'
     | '/writing/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -115,9 +163,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   JourneyRoute: typeof JourneyRoute
-  JunkyardRoute: typeof JunkyardRoute
-  LabRoute: typeof LabRoute
+  JunkyardRoute: typeof JunkyardRouteWithChildren
+  LabRoute: typeof LabRouteWithChildren
+  PodcastRoute: typeof PodcastRoute
   WritingRoute: typeof WritingRouteWithChildren
+  ProjectsSlugRoute: typeof ProjectsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -127,6 +177,13 @@ declare module '@tanstack/react-router' {
       path: '/writing'
       fullPath: '/writing'
       preLoaderRoute: typeof WritingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podcast': {
+      id: '/podcast'
+      path: '/podcast'
+      fullPath: '/podcast'
+      preLoaderRoute: typeof PodcastRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lab': {
@@ -171,8 +228,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WritingSlugRouteImport
       parentRoute: typeof WritingRoute
     }
+    '/projects/$slug': {
+      id: '/projects/$slug'
+      path: '/projects/$slug'
+      fullPath: '/projects/$slug'
+      preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab/$slug': {
+      id: '/lab/$slug'
+      path: '/$slug'
+      fullPath: '/lab/$slug'
+      preLoaderRoute: typeof LabSlugRouteImport
+      parentRoute: typeof LabRoute
+    }
+    '/junkyard/$slug': {
+      id: '/junkyard/$slug'
+      path: '/$slug'
+      fullPath: '/junkyard/$slug'
+      preLoaderRoute: typeof JunkyardSlugRouteImport
+      parentRoute: typeof JunkyardRoute
+    }
   }
 }
+
+interface JunkyardRouteChildren {
+  JunkyardSlugRoute: typeof JunkyardSlugRoute
+}
+
+const JunkyardRouteChildren: JunkyardRouteChildren = {
+  JunkyardSlugRoute: JunkyardSlugRoute,
+}
+
+const JunkyardRouteWithChildren = JunkyardRoute._addFileChildren(
+  JunkyardRouteChildren,
+)
+
+interface LabRouteChildren {
+  LabSlugRoute: typeof LabSlugRoute
+}
+
+const LabRouteChildren: LabRouteChildren = {
+  LabSlugRoute: LabSlugRoute,
+}
+
+const LabRouteWithChildren = LabRoute._addFileChildren(LabRouteChildren)
 
 interface WritingRouteChildren {
   WritingSlugRoute: typeof WritingSlugRoute
@@ -189,9 +289,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   JourneyRoute: JourneyRoute,
-  JunkyardRoute: JunkyardRoute,
-  LabRoute: LabRoute,
+  JunkyardRoute: JunkyardRouteWithChildren,
+  LabRoute: LabRouteWithChildren,
+  PodcastRoute: PodcastRoute,
   WritingRoute: WritingRouteWithChildren,
+  ProjectsSlugRoute: ProjectsSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
