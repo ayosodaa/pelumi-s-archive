@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { EraCard } from "@/components/site/EraCard";
-import { listEras, getNavigation, getSocialLinks, getSettings } from "@/lib/db";
+import { listEras, getNavigation, getSocialLinks, getSettings, type Era } from "@/lib/db";
 
 export const Route = createFileRoute("/journey")({
   loader: async () => {
@@ -29,7 +29,7 @@ function JourneyPage() {
         </p>
       </header>
       <section className="px-6 md:px-12 max-w-[1400px] mx-auto pb-24">
-        {eras.map((era, i) => <EraCard key={era.id} era={era} defaultOpen={i === 0} />)}
+        {(eras as Era[]).map((era, i) => <EraCard key={era.id} era={era} defaultOpen={i === 0} />)}
         <div className="border-t border-ink/10" />
       </section>
       <SiteFooter settings={settings} socials={socials} eras={eras} />

@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ToolCard } from "@/components/site/ToolCard";
-import { listTools, listEras, getNavigation, getSocialLinks, getSettings } from "@/lib/db";
+import { listTools, listEras, getNavigation, getSocialLinks, getSettings, type Tool } from "@/lib/db";
 
 export const Route = createFileRoute("/lab")({
   loader: async () => {
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/lab")({
 });
 
 function LabPage() {
-  const { tools, eras, nav, socials, settings } = Route.useLoaderData();
+  const { tools, eras, nav, socials, settings } = Route.useLoaderData() as { tools: Tool[]; eras: any; nav: any; socials: any; settings: any };
   const cats = useMemo(() => {
     const set = new Set<string>();
     tools.forEach((t) => t.category && set.add(t.category));

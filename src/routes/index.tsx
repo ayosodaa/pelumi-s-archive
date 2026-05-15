@@ -6,7 +6,7 @@ import { Hero } from "@/components/site/Hero";
 import { SectionHeader } from "@/components/site/SectionHeader";
 import { ToolCard } from "@/components/site/ToolCard";
 import { JunkCard } from "@/components/site/JunkCard";
-import { getHomeData, getNavigation, getSocialLinks } from "@/lib/db";
+import { getHomeData, getNavigation, getSocialLinks, type Era, type Tool, type JunkItem, type Writing } from "@/lib/db";
 
 export const Route = createFileRoute("/")({
   loader: async () => {
@@ -39,7 +39,7 @@ function HomePage() {
           description="Each one a different way of asking the same question."
         />
         <div className="mt-16 grid grid-cols-1 md:grid-cols-7 border-t border-ink/10">
-          {eras.map((e) => (
+          {(eras as Era[]).map((e) => (
             <Link
               key={e.id}
               to="/journey"
@@ -68,7 +68,7 @@ function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tools.slice(0, 6).map((t) => <ToolCard key={t.id} tool={t} />)}
+            {(tools as Tool[]).slice(0, 6).map((t) => <ToolCard key={t.id} tool={t} />)}
           </div>
         </div>
       </section>
@@ -82,7 +82,7 @@ function HomePage() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-ink">
-            {junk.slice(0, 3).map((j) => <JunkCard key={j.id} item={j} />)}
+            {(junk as JunkItem[]).slice(0, 3).map((j) => <JunkCard key={j.id} item={j} />)}
           </div>
           <div className="mt-12">
             <Link to="/junkyard" className="text-xs uppercase tracking-[0.25em] font-medium text-paper border-b border-paper/40 pb-1 hover:text-ochre hover:border-ochre transition-colors">
@@ -101,7 +101,7 @@ function HomePage() {
             </Link>
           </div>
           <div className="md:col-span-8 space-y-2">
-            {writing.slice(0, 4).map((w, i) => (
+            {(writing as Writing[]).slice(0, 4).map((w, i) => (
               <motion.div key={w.slug} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5, delay: i * 0.06 }}>
                 <Link to="/writing/$slug" params={{ slug: w.slug }} className="block py-6 border-t border-ink/10 group">
                   <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8">
