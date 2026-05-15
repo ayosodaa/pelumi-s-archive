@@ -53,7 +53,7 @@ function WritingEntryPage() {
         {entry.excerpt && <p className="mt-6 font-serif italic text-2xl text-ink/70 text-pretty">{entry.excerpt}</p>}
         {entry.cover_image_url && <img src={entry.cover_image_url} alt={entry.title} className="mt-10 w-full aspect-[16/9] object-cover" loading="lazy" />}
         <div className="mt-14 space-y-7 font-serif text-xl leading-relaxed text-ink/85">
-          {paragraphs.map((p, i) => <p key={i} className="text-pretty whitespace-pre-line">{p}</p>)}
+          {paragraphs.map((p: string, i: number) => <p key={i} className="text-pretty whitespace-pre-line">{p}</p>)}
         </div>
       </article>
       <SiteFooter settings={settings} socials={socials} eras={eras} />

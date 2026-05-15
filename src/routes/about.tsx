@@ -27,7 +27,7 @@ function AboutPage() {
             <span className="italic">{settings.site_title}</span>
           </h1>
           <div className="mt-10 space-y-6 font-serif text-xl leading-relaxed text-ink/80">
-            {paragraphs.map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}
+            {paragraphs.map((p: string, i: number) => <p key={i} className="whitespace-pre-line">{p}</p>)}
           </div>
           {settings.contact_email && (
             <div className="mt-14 border-t border-ink/10 pt-10">
@@ -36,7 +36,7 @@ function AboutPage() {
                 {settings.contact_email}
               </a>
               <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-[11px] uppercase tracking-[0.22em] font-medium">
-                {socials.map((s) => (
+                {(socials as { id: string; label: string; url: string }[]).map((s) => (
                   <li key={s.id}><a href={s.url} target="_blank" rel="noreferrer" className="hover:text-clay">{s.label}</a></li>
                 ))}
               </ul>

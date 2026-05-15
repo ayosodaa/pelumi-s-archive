@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { listWriting, listEras, getNavigation, getSocialLinks, getSettings } from "@/lib/db";
+import { listWriting, listEras, getNavigation, getSocialLinks, getSettings, type Writing } from "@/lib/db";
 
 export const Route = createFileRoute("/writing")({
   loader: async () => {
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/writing")({
 });
 
 function WritingPage() {
-  const { writings, eras, nav, socials, settings } = Route.useLoaderData();
+  const { writings, eras, nav, socials, settings } = Route.useLoaderData() as { writings: Writing[]; eras: any; nav: any; socials: any; settings: any };
   const cats = useMemo(() => {
     const set = new Set<string>();
     writings.forEach((w) => w.category && set.add(w.category));
