@@ -18,13 +18,13 @@ export function JunkCard({ item }: { item: JunkItem }) {
 
       <ImagePlaceholder caption={item.project_name} aspect="aspect-[5/4]" />
 
-      <div>
-        <h3 className="font-serif text-xl leading-tight tracking-tight mb-3">{item.project_name}</h3>
+      <Link to="/junkyard/$slug" params={{ slug: item.slug }} className="block">
+        <h3 className="font-serif text-xl leading-tight tracking-tight mb-3 hover:text-clay transition-colors">{item.project_name}</h3>
         <p className="text-sm text-ink/65 mb-4">{item.what}</p>
         <p className="text-sm text-ink/85 italic font-serif border-l-2 border-clay/50 pl-3">
           Why it failed: <span className="not-italic font-sans text-ink/65">{item.why_failed}</span>
         </p>
-      </div>
+      </Link>
 
       <div className="border-t border-ink/10 pt-3">
         <p className="text-[9px] uppercase tracking-[0.25em] font-bold text-earth mb-1">Lesson</p>
