@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { JunkCard } from "@/components/site/JunkCard";
-import { listJunkyard, listEras, getNavigation, getSocialLinks, getSettings } from "@/lib/db";
+import { listJunkyard, listEras, getNavigation, getSocialLinks, getSettings, type JunkItem } from "@/lib/db";
 
 export const Route = createFileRoute("/junkyard")({
   loader: async () => {
