@@ -9,7 +9,15 @@ export const Route = createFileRoute("/junkyard")({
     const [items, eras, nav, socials, settings] = await Promise.all([listJunkyard(), listEras(), getNavigation("header"), getSocialLinks(), getSettings()]);
     return { items, eras, nav, socials, settings };
   },
-  head: () => ({ meta: [{ title: "The Junkyard — Oluwapelumi Samuel" }] }),
+  head: () => ({
+    meta: [
+      { title: "The Junkyard — Oluwapelumi Samuel" },
+      { name: "description", content: "A scrapbook of failed experiments, abandoned prototypes, and lessons learned." },
+      { property: "og:title", content: "The Junkyard" },
+      { property: "og:description", content: "A scrapbook of failed experiments, abandoned prototypes, and lessons learned." },
+    ],
+    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/junkyard" }],
+  }),
   errorComponent: ({ error }) => <div className="p-12">Failed: {error.message}</div>,
   component: JunkyardPage,
 });

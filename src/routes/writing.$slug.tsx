@@ -15,7 +15,7 @@ export const Route = createFileRoute("/writing/$slug")({
     if (!entry) throw notFound();
     return { entry, eras, nav, socials, settings };
   },
-  head: ({ loaderData }) => ({
+  head: ({ loaderData, params }) => ({
     meta: loaderData
       ? [
           { title: `${loaderData.entry.title} — Oluwapelumi Samuel` },
@@ -23,8 +23,12 @@ export const Route = createFileRoute("/writing/$slug")({
           { property: "og:title", content: loaderData.entry.title },
           { property: "og:description", content: loaderData.entry.excerpt ?? "" },
           { property: "og:type", content: "article" },
+          ...(loaderData.entry.cover_image_url
+            ? [{ property: "og:image", content: loaderData.entry.cover_image_url }]
+            : []),
         ]
       : [{ title: "Writing — Oluwapelumi Samuel" }],
+    links: [{ rel: "canonical", href: `https://pelumi-archive-lab.lovable.app/writing/${params.slug}` }],
   }),
   notFoundComponent: () => (
     <main className="min-h-screen grid place-items-center bg-paper text-ink p-8">

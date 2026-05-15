@@ -9,7 +9,15 @@ export const Route = createFileRoute("/journey")({
     const [eras, nav, socials, settings] = await Promise.all([listEras(), getNavigation("header"), getSocialLinks(), getSettings()]);
     return { eras, nav, socials, settings };
   },
-  head: () => ({ meta: [{ title: "The Journey So Far — Oluwapelumi Samuel" }] }),
+  head: () => ({
+    meta: [
+      { title: "The Journey So Far — Oluwapelumi Samuel" },
+      { name: "description", content: "Seven eras of building, breaking, and re-building across Africa." },
+      { property: "og:title", content: "The Journey So Far" },
+      { property: "og:description", content: "Seven eras of building, breaking, and re-building across Africa." },
+    ],
+    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/journey" }],
+  }),
   errorComponent: ({ error }) => <div className="p-12">Failed: {error.message}</div>,
   component: JourneyPage,
 });

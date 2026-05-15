@@ -10,7 +10,15 @@ export const Route = createFileRoute("/lab")({
     const [tools, eras, nav, socials, settings] = await Promise.all([listTools(), listEras(), getNavigation("header"), getSocialLinks(), getSettings()]);
     return { tools, eras, nav, socials, settings };
   },
-  head: () => ({ meta: [{ title: "The Lab — Oluwapelumi Samuel" }] }),
+  head: () => ({
+    meta: [
+      { title: "The Lab — Oluwapelumi Samuel" },
+      { name: "description", content: "A public workshop of tools, templates, and decision frameworks." },
+      { property: "og:title", content: "The Lab" },
+      { property: "og:description", content: "A public workshop of tools, templates, and decision frameworks." },
+    ],
+    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/lab" }],
+  }),
   errorComponent: ({ error }) => <div className="p-12">Failed: {error.message}</div>,
   component: LabPage,
 });
