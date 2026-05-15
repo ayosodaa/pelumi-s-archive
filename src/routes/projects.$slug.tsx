@@ -3,7 +3,7 @@ import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ImagePlaceholder } from "@/components/site/ImagePlaceholder";
 import {
-  getProject, listEras, getNavigation, getSocialLinks, getSettings,
+  getProject, listEras, getNavigation, getSocialLinks, getSettings, type Project,
 } from "@/lib/db";
 
 export const Route = createFileRoute("/projects/$slug")({
@@ -46,7 +46,9 @@ export const Route = createFileRoute("/projects/$slug")({
 });
 
 function ProjectPage() {
-  const { project, eras, nav, socials, settings } = Route.useLoaderData();
+  const { project, eras, nav, socials, settings } = Route.useLoaderData() as {
+    project: Project; eras: any; nav: any; socials: any; settings: any;
+  };
   return (
     <main className="bg-paper text-ink min-h-screen">
       <SiteNav nav={nav} brand={settings.site_short} />

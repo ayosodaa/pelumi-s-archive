@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ImagePlaceholder } from "@/components/site/ImagePlaceholder";
-import { getTool, listEras, getNavigation, getSocialLinks, getSettings } from "@/lib/db";
+import { getTool, listEras, getNavigation, getSocialLinks, getSettings, type Tool } from "@/lib/db";
 
 export const Route = createFileRoute("/lab/$slug")({
   loader: async ({ params }) => {
@@ -44,7 +44,9 @@ export const Route = createFileRoute("/lab/$slug")({
 });
 
 function ToolPage() {
-  const { tool, eras, nav, socials, settings } = Route.useLoaderData();
+  const { tool, eras, nav, socials, settings } = Route.useLoaderData() as {
+    tool: Tool; eras: any; nav: any; socials: any; settings: any;
+  };
   return (
     <main className="bg-paper text-ink min-h-screen">
       <SiteNav nav={nav} brand={settings.site_short} />

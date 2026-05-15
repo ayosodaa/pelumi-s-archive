@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ImagePlaceholder } from "@/components/site/ImagePlaceholder";
-import { getJunk, listEras, getNavigation, getSocialLinks, getSettings } from "@/lib/db";
+import { getJunk, listEras, getNavigation, getSocialLinks, getSettings, type JunkItem } from "@/lib/db";
 
 export const Route = createFileRoute("/junkyard/$slug")({
   loader: async ({ params }) => {
@@ -41,7 +41,9 @@ export const Route = createFileRoute("/junkyard/$slug")({
 });
 
 function JunkPage() {
-  const { item, eras, nav, socials, settings } = Route.useLoaderData();
+  const { item, eras, nav, socials, settings } = Route.useLoaderData() as {
+    item: JunkItem; eras: any; nav: any; socials: any; settings: any;
+  };
   return (
     <main className="bg-earth/95 text-paper min-h-screen">
       <SiteNav nav={nav} brand={settings.site_short} />
