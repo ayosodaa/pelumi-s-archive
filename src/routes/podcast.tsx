@@ -31,7 +31,7 @@ export const Route = createFileRoute("/podcast")({
     ],
     links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/podcast" }],
   }),
-  errorComponent: ({ error }) => <div className="p-12">Failed: {error.message}</div>,
+  errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: PodcastPage,
 });
 

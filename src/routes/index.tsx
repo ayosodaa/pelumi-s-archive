@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: loaderData?.settings.seo_description ?? "" },
     ],
   }),
-  errorComponent: ({ error }) => <div className="p-12">Failed to load: {error.message}</div>,
+  errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: HomePage,
 });
 
