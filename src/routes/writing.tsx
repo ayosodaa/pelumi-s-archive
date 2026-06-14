@@ -18,7 +18,7 @@ export const Route = createFileRoute("/writing")({
     ],
     links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/writing" }],
   }),
-  errorComponent: ({ error }) => <div className="p-12">Failed: {error.message}</div>,
+  errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: WritingPage,
 });
 
