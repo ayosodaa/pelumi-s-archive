@@ -1,24 +1,55 @@
-## Lock down storage writes to admins only
+## Goal
 
-Right now the 9 storage buckets (`hero`, `eras`, `projects`, `writing`, `podcast`, `tools`, `junkyard`, `galleries`, `downloads`) are public-read but have **no write policies**. Depending on Supabase defaults, that can let any signed-in user upload, overwrite, or delete files. Since this site has no admin UI (you upload via Supabase Studio as the project owner, which bypasses RLS), no end user ever needs write access.
+Add **Vercel** as an additional deploy target for this TanStack Start app, keeping the existing Lovable Cloud (Cloudflare Workers) publish flow fully intact. SSR stays on, Supabase reads/writes keep working, no static export.
 
-### Approach
+## What you should know first
 
-Add an `admin` role using the standard `user_roles` + `has_role()` pattern, then add INSERT/UPDATE/DELETE policies on `storage.objects` scoped to admins for each of the 9 buckets. Keep the existing public SELECT policy untouched so the site can still read images.
+- **Lovable Publish still works as today** — preview URL and `pelumi-archive-lab.lovable.app` are untouched. Vercel becomes a parallel deploy you trigger from Vercel's dashboard or CLI.
+- **One repo, two targets.** The same source builds for Workers (current) or Node/Vercel (new), selected by a build flag.
+- **Database keeps working** — Supabase is HTTP; identical behavior on Node and Workers. RLS, storage, auth all unchanged.
+- **One caveat:** any future code you add that's Workers-specific (e.g. `Hyperdrive`, `KV` bindings) won't run on Vercel, and vice versa. Today there's none of that — `src/server.ts` is a plain `fetch` handler, which both runtimes support.
 
-### Migration steps (single SQL migration)
+## Changes
 
-1. Create `app_role` enum (`admin`) and `public.user_roles` table with GRANTs + RLS.
-2. Create `public.has_role(_user_id uuid, _role app_role)` security-definer function (canonical pattern, prevents RLS recursion).
-3. On `storage.objects`, add three policies per bucket — INSERT, UPDATE, DELETE — each `USING / WITH CHECK (bucket_id = '<name>' AND public.has_role(auth.uid(), 'admin'))`. Covers all 9 buckets.
-4. Leave the existing public SELECT policy alone.
+### 1. Vite config — dual-target switch
+Update `vite.config.ts` so that when `BUILD_TARGET=vercel` is set, it swaps the nitro preset to `vercel` (Node SSR) and disables the Cloudflare plugin. Default behavior (no env var) stays Cloudflare so Lovable Publish is unaffected.
 
-### After the migration
+### 2. New files
+- **`vercel.json`** — tells Vercel to run `bun run build:vercel`, output dir `.vercel/output` (nitro's vercel preset writes there in the Build Output API v3 format Vercel expects natively).
+- **`src/server.node.ts`** *(optional, only if nitro preset alone isn't enough)* — thin Node adapter that re-exports `src/server.ts`'s `fetch` handler. Keeps `src/server.ts` untouched (your requirement).
 
-- You'll need to insert one row into `user_roles` (`user_id = <your auth user id>`, `role = 'admin'`) so you can upload from a signed-in client later if you ever add one. **For now, Studio uploads continue to work unchanged** — Studio uses the service role and bypasses RLS entirely.
-- No frontend code changes. The site only reads from storage, which stays public.
+### 3. `package.json` scripts
+Add:
+- `"build:vercel": "BUILD_TARGET=vercel vite build"`
 
-### Out of scope
+Keep existing `build` (Cloudflare) as-is.
 
-- No admin UI, no role-management screen, no signed-upload flow — you've said uploads happen in Studio.
-- The other finding (`website_settings.contact_email` exposed) is separate and not addressed here.
+### 4. Env vars in Vercel (walkthrough)
+In **Vercel Dashboard → your project → Settings → Environment Variables**, add for **Production** and **Preview**:
+
+| Name | Value | Where to get it |
+|---|---|---|
+| `VITE_SUPABASE_URL` | copy from current `.env` | Lovable → Cloud → Backend → Settings |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | copy from `.env` | same |
+| `VITE_SUPABASE_PROJECT_ID` | copy from `.env` | same |
+| `SUPABASE_URL` | same as `VITE_SUPABASE_URL` | — |
+| `SUPABASE_PUBLISHABLE_KEY` | same as `VITE_SUPABASE_PUBLISHABLE_KEY` | — |
+| `SUPABASE_SERVICE_ROLE_KEY` | from Lovable → Cloud → Backend → API keys → service_role | **never commit this** |
+| `LOVABLE_API_KEY` | only if you call the AI Gateway from server fns | Lovable → Cloud → Secrets |
+
+I'll print this exact table in the build-mode summary too, with the actual values from `.env` filled in for the public ones.
+
+### 5. Deployment flow
+After the code changes, you deploy to Vercel one of two ways:
+- **GitHub**: push the repo to GitHub, import it in Vercel, it auto-runs `build:vercel`.
+- **CLI**: `npx vercel --prod` from your machine.
+
+Lovable Publish keeps working in parallel — no overlap.
+
+## Out of scope
+- Netlify config (you mentioned "Vercel or Netlify" — I'll do Vercel per your earlier pick of *Add Vercel alongside Cloudflare*. Say the word and I'll add a `netlify.toml` + functions adapter in a follow-up).
+- Removing Cloudflare/wrangler.
+- Custom domains on Vercel — configure in Vercel dashboard after first deploy.
+
+## Risks
+- **nitro vercel preset compatibility** with the current `@lovable.dev/vite-tanstack-config` wrapper: the wrapper hardcodes the Cloudflare plugin. If the preset switch can't be done cleanly via env var override, fallback is to bypass the wrapper for the Vercel build and call `tanstackStart({ target: 'vercel' })` + `viteReact()` + `tailwindcss()` directly in a `vite.config.vercel.ts`. I'll verify which works during build mode and pick the cleaner one.
