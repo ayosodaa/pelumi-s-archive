@@ -327,6 +327,117 @@ export type Database = {
           },
         ]
       }
+      resume_education: {
+        Row: {
+          created_at: string
+          credential: string
+          date_label: string | null
+          id: string
+          institution: string
+          note: string | null
+          published: boolean
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          credential: string
+          date_label?: string | null
+          id?: string
+          institution: string
+          note?: string | null
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          credential?: string
+          date_label?: string | null
+          id?: string
+          institution?: string
+          note?: string | null
+          published?: boolean
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      resume_experience: {
+        Row: {
+          bullets: string[]
+          created_at: string
+          end_label: string | null
+          id: string
+          is_current: boolean
+          location: string | null
+          org: string
+          published: boolean
+          role: string
+          sort_order: number
+          start_label: string | null
+          updated_at: string
+        }
+        Insert: {
+          bullets?: string[]
+          created_at?: string
+          end_label?: string | null
+          id?: string
+          is_current?: boolean
+          location?: string | null
+          org: string
+          published?: boolean
+          role: string
+          sort_order?: number
+          start_label?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bullets?: string[]
+          created_at?: string
+          end_label?: string | null
+          id?: string
+          is_current?: boolean
+          location?: string | null
+          org?: string
+          published?: boolean
+          role?: string
+          sort_order?: number
+          start_label?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      resume_skills: {
+        Row: {
+          cluster: string
+          created_at: string
+          id: string
+          published: boolean
+          skills: string[]
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          cluster: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          skills?: string[]
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          cluster?: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          skills?: string[]
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       social_links: {
         Row: {
           created_at: string
@@ -442,6 +553,8 @@ export type Database = {
           hero_subtitle: string | null
           hero_title: string | null
           id: string
+          resume_intro: string | null
+          resume_pdf_path: string | null
           seo_description: string | null
           seo_og_image: string | null
           seo_title: string | null
@@ -460,6 +573,8 @@ export type Database = {
           hero_subtitle?: string | null
           hero_title?: string | null
           id?: string
+          resume_intro?: string | null
+          resume_pdf_path?: string | null
           seo_description?: string | null
           seo_og_image?: string | null
           seo_title?: string | null
@@ -478,6 +593,8 @@ export type Database = {
           hero_subtitle?: string | null
           hero_title?: string | null
           id?: string
+          resume_intro?: string | null
+          resume_pdf_path?: string | null
           seo_description?: string | null
           seo_og_image?: string | null
           seo_title?: string | null
