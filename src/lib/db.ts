@@ -142,7 +142,43 @@ export async function getSettings(): Promise<WebsiteSettings> {
     seo_title: data?.seo_title ?? null,
     seo_description: data?.seo_description ?? null,
     seo_og_image: data?.seo_og_image ?? null,
+    resume_intro: (data as { resume_intro?: string | null } | null)?.resume_intro ?? null,
+    resume_pdf_url: publicUrl("downloads", (data as { resume_pdf_path?: string | null } | null)?.resume_pdf_path ?? null),
   };
+}
+
+export async function listResumeExperience(): Promise<ResumeExperience[]> {
+  const { data } = await supabase
+    .from("resume_experience")
+    .select("id,org,role,location,start_label,end_label,is_current,bullets,sort_order")
+    .eq("published", true)
+    .order("sort_order");
+  return (data ?? []).map((r) => ({
+    id: r.id, org: r.org, role: r.role, location: r.location,
+    start_label: r.start_label, end_label: r.end_label,
+    is_current: r.is_current, bullets: r.bullets ?? [],
+  }));
+}
+
+export async function listResumeSkills(): Promise<ResumeSkillCluster[]> {
+  const { data } = await supabase
+    .from("resume_skills")
+    .select("id,cluster,skills,sort_order")
+    .eq("published", true)
+    .order("sort_order");
+  return (data ?? []).map((r) => ({ id: r.id, cluster: r.cluster, skills: r.skills ?? [] }));
+}
+
+export async function listResumeEducation(): Promise<ResumeEducation[]> {
+  const { data } = await supabase
+    .from("resume_education")
+    .select("id,institution,credential,date_label,note,sort_order")
+    .eq("published", true)
+    .order("sort_order");
+  return (data ?? []).map((r) => ({
+    id: r.id, institution: r.institution, credential: r.credential,
+    date_label: r.date_label, note: r.note,
+  }));
 }
 
 export async function getSocialLinks(): Promise<SocialLink[]> {
