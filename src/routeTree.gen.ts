@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WritingRouteImport } from './routes/writing'
+import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as PodcastRouteImport } from './routes/podcast'
 import { Route as LabRouteImport } from './routes/lab'
 import { Route as JunkyardRouteImport } from './routes/junkyard'
@@ -24,6 +25,11 @@ import { Route as JunkyardSlugRouteImport } from './routes/junkyard.$slug'
 const WritingRoute = WritingRouteImport.update({
   id: '/writing',
   path: '/writing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResumeRoute = ResumeRouteImport.update({
+  id: '/resume',
+  path: '/resume',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PodcastRoute = PodcastRouteImport.update({
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/junkyard': typeof JunkyardRouteWithChildren
   '/lab': typeof LabRouteWithChildren
   '/podcast': typeof PodcastRoute
+  '/resume': typeof ResumeRoute
   '/writing': typeof WritingRouteWithChildren
   '/junkyard/$slug': typeof JunkyardSlugRoute
   '/lab/$slug': typeof LabSlugRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/junkyard': typeof JunkyardRouteWithChildren
   '/lab': typeof LabRouteWithChildren
   '/podcast': typeof PodcastRoute
+  '/resume': typeof ResumeRoute
   '/writing': typeof WritingRouteWithChildren
   '/junkyard/$slug': typeof JunkyardSlugRoute
   '/lab/$slug': typeof LabSlugRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/junkyard': typeof JunkyardRouteWithChildren
   '/lab': typeof LabRouteWithChildren
   '/podcast': typeof PodcastRoute
+  '/resume': typeof ResumeRoute
   '/writing': typeof WritingRouteWithChildren
   '/junkyard/$slug': typeof JunkyardSlugRoute
   '/lab/$slug': typeof LabSlugRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/junkyard'
     | '/lab'
     | '/podcast'
+    | '/resume'
     | '/writing'
     | '/junkyard/$slug'
     | '/lab/$slug'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/junkyard'
     | '/lab'
     | '/podcast'
+    | '/resume'
     | '/writing'
     | '/junkyard/$slug'
     | '/lab/$slug'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/junkyard'
     | '/lab'
     | '/podcast'
+    | '/resume'
     | '/writing'
     | '/junkyard/$slug'
     | '/lab/$slug'
@@ -166,6 +178,7 @@ export interface RootRouteChildren {
   JunkyardRoute: typeof JunkyardRouteWithChildren
   LabRoute: typeof LabRouteWithChildren
   PodcastRoute: typeof PodcastRoute
+  ResumeRoute: typeof ResumeRoute
   WritingRoute: typeof WritingRouteWithChildren
   ProjectsSlugRoute: typeof ProjectsSlugRoute
 }
@@ -177,6 +190,13 @@ declare module '@tanstack/react-router' {
       path: '/writing'
       fullPath: '/writing'
       preLoaderRoute: typeof WritingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resume': {
+      id: '/resume'
+      path: '/resume'
+      fullPath: '/resume'
+      preLoaderRoute: typeof ResumeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/podcast': {
@@ -292,19 +312,10 @@ const rootRouteChildren: RootRouteChildren = {
   JunkyardRoute: JunkyardRouteWithChildren,
   LabRoute: LabRouteWithChildren,
   PodcastRoute: PodcastRoute,
+  ResumeRoute: ResumeRoute,
   WritingRoute: WritingRouteWithChildren,
   ProjectsSlugRoute: ProjectsSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

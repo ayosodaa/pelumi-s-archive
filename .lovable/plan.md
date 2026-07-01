@@ -1,55 +1,56 @@
-## Goal
+# Resume section — plan
 
-Add **Vercel** as an additional deploy target for this TanStack Start app, keeping the existing Lovable Cloud (Cloudflare Workers) publish flow fully intact. SSR stays on, Supabase reads/writes keep working, no static export.
+Add a dedicated `/resume` page in the same serif/clay editorial style as `/about` and `/journey`, backed by three new Lovable Cloud tables so you can edit content from the backend like the rest of the site.
 
-## What you should know first
+## New route
 
-- **Lovable Publish still works as today** — preview URL and `pelumi-archive-lab.lovable.app` are untouched. Vercel becomes a parallel deploy you trigger from Vercel's dashboard or CLI.
-- **One repo, two targets.** The same source builds for Workers (current) or Node/Vercel (new), selected by a build flag.
-- **Database keeps working** — Supabase is HTTP; identical behavior on Node and Workers. RLS, storage, auth all unchanged.
-- **One caveat:** any future code you add that's Workers-specific (e.g. `Hyperdrive`, `KV` bindings) won't run on Vercel, and vice versa. Today there's none of that — `src/server.ts` is a plain `fetch` handler, which both runtimes support.
+`src/routes/resume.tsx` — loader fetches settings, nav, socials, experiences, skills, education. Own `head()` (title, description, og:title/description). Sections top-to-bottom:
 
-## Changes
+1. **Header** — kicker "Resume", serif h1 ("A professional record."), short intro paragraph pulled from `website_settings.resume_intro`, "Download CV (PDF)" button pointing to `website_settings.resume_pdf_url`.
+2. **Experience** — vertical timeline of roles: org, title, location, date range, 2–4 bullet achievements. Ordered newest-first.
+3. **Skills & expertise** — grouped clusters (e.g. Programme Ops, Entrepreneurship, Conservation, Technology, Writing). Each cluster = heading + tag list.
+4. **Education & certifications** — same timeline style as Experience but tighter: institution, credential, date, optional note.
+5. Footer (reused).
 
-### 1. Vite config — dual-target switch
-Update `vite.config.ts` so that when `BUILD_TARGET=vercel` is set, it swaps the nitro preset to `vercel` (Node SSR) and disables the Cloudflare plugin. Default behavior (no env var) stays Cloudflare so Lovable Publish is unaffected.
+Add "Resume" to the header nav via the existing `navigation` table (seed row, no code change needed).
 
-### 2. New files
-- **`vercel.json`** — tells Vercel to run `bun run build:vercel`, output dir `.vercel/output` (nitro's vercel preset writes there in the Build Output API v3 format Vercel expects natively).
-- **`src/server.node.ts`** *(optional, only if nitro preset alone isn't enough)* — thin Node adapter that re-exports `src/server.ts`'s `fetch` handler. Keeps `src/server.ts` untouched (your requirement).
+## Data model (3 new tables + 2 columns)
 
-### 3. `package.json` scripts
-Add:
-- `"build:vercel": "BUILD_TARGET=vercel vite build"`
+```text
+website_settings
+  + resume_intro       text
+  + resume_pdf_path    text  -- stored in existing "downloads" bucket
 
-Keep existing `build` (Cloudflare) as-is.
+resume_experience
+  id, org, role, location, start_label, end_label,
+  is_current bool, bullets text[], sort_order int,
+  published bool, created_at, updated_at
 
-### 4. Env vars in Vercel (walkthrough)
-In **Vercel Dashboard → your project → Settings → Environment Variables**, add for **Production** and **Preview**:
+resume_skills
+  id, cluster (e.g. "Programme Ops"), skills text[],
+  sort_order int, published bool, created_at, updated_at
 
-| Name | Value | Where to get it |
-|---|---|---|
-| `VITE_SUPABASE_URL` | copy from current `.env` | Lovable → Cloud → Backend → Settings |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | copy from `.env` | same |
-| `VITE_SUPABASE_PROJECT_ID` | copy from `.env` | same |
-| `SUPABASE_URL` | same as `VITE_SUPABASE_URL` | — |
-| `SUPABASE_PUBLISHABLE_KEY` | same as `VITE_SUPABASE_PUBLISHABLE_KEY` | — |
-| `SUPABASE_SERVICE_ROLE_KEY` | from Lovable → Cloud → Backend → API keys → service_role | **never commit this** |
-| `LOVABLE_API_KEY` | only if you call the AI Gateway from server fns | Lovable → Cloud → Secrets |
+resume_education
+  id, institution, credential, date_label, note,
+  sort_order int, published bool, created_at, updated_at
+```
 
-I'll print this exact table in the build-mode summary too, with the actual values from `.env` filled in for the public ones.
+RLS: public SELECT where `published = true` (mirrors existing content tables); writes restricted to `admin` role via existing `has_role`. Standard GRANTs to `anon`, `authenticated`, `service_role`.
 
-### 5. Deployment flow
-After the code changes, you deploy to Vercel one of two ways:
-- **GitHub**: push the repo to GitHub, import it in Vercel, it auto-runs `build:vercel`.
-- **CLI**: `npx vercel --prod` from your machine.
+PDF upload uses the existing public `downloads` bucket; `publicUrl("downloads", …)` resolves the link.
 
-Lovable Publish keeps working in parallel — no overlap.
+## Code changes
 
-## Out of scope
-- Netlify config (you mentioned "Vercel or Netlify" — I'll do Vercel per your earlier pick of *Add Vercel alongside Cloudflare*. Say the word and I'll add a `netlify.toml` + functions adapter in a follow-up).
-- Removing Cloudflare/wrangler.
-- Custom domains on Vercel — configure in Vercel dashboard after first deploy.
+- **Migration** (via migration tool) — 3 tables + column additions + RLS + policies + GRANTs + `set_updated_at` triggers + one nav row `('Resume','/resume','header')`.
+- **`src/lib/db.ts`** — add types `ResumeExperience`, `ResumeSkillCluster`, `ResumeEducation`; extend `WebsiteSettings` with `resume_intro` and `resume_pdf_url`; add `listResumeExperience()`, `listResumeSkills()`, `listResumeEducation()`.
+- **`src/routes/resume.tsx`** — new route matching existing conventions (loader + head + errorComponent, `SiteNav` + `SiteFooter`).
+- **`src/components/site/ResumeTimeline.tsx`** — small presentational component for experience/education items.
+- Seed empty/example rows so the page renders on first load; you edit real content via the backend afterwards.
 
-## Risks
-- **nitro vercel preset compatibility** with the current `@lovable.dev/vite-tanstack-config` wrapper: the wrapper hardcodes the Cloudflare plugin. If the preset switch can't be done cleanly via env var override, fallback is to bypass the wrapper for the Vercel build and call `tanstackStart({ target: 'vercel' })` + `viteReact()` + `tailwindcss()` directly in a `vite.config.vercel.ts`. I'll verify which works during build mode and pick the cleaner one.
+## Not in scope
+
+- Auto-generating the PDF from DB content (you upload a PDF you control).
+- Public write forms — content stays admin-only.
+- Restyling `/about` or removing existing bio.
+
+After you approve, I'll run the migration first, then wire the code once the types regenerate.
