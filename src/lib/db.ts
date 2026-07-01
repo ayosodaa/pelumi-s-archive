@@ -84,6 +84,33 @@ export type WebsiteSettings = {
   seo_title: string | null;
   seo_description: string | null;
   seo_og_image: string | null;
+  resume_intro: string | null;
+  resume_pdf_url: string | null;
+};
+
+export type ResumeExperience = {
+  id: string;
+  org: string;
+  role: string;
+  location: string | null;
+  start_label: string | null;
+  end_label: string | null;
+  is_current: boolean;
+  bullets: string[];
+};
+
+export type ResumeSkillCluster = {
+  id: string;
+  cluster: string;
+  skills: string[];
+};
+
+export type ResumeEducation = {
+  id: string;
+  institution: string;
+  credential: string;
+  date_label: string | null;
+  note: string | null;
 };
 
 // ---------- helpers ----------
