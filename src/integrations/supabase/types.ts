@@ -545,6 +545,7 @@ export type Database = {
       }
       website_settings: {
         Row: {
+          about_image_path: string | null
           about_text: string | null
           contact_email: string | null
           created_at: string
@@ -565,6 +566,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          about_image_path?: string | null
           about_text?: string | null
           contact_email?: string | null
           created_at?: string
@@ -585,6 +587,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          about_image_path?: string | null
           about_text?: string | null
           contact_email?: string | null
           created_at?: string
