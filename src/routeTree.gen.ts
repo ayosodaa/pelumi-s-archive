@@ -9,47 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WritingRouteImport } from './routes/writing'
-import { Route as ResumeRouteImport } from './routes/resume'
-import { Route as PodcastRouteImport } from './routes/podcast'
-import { Route as LabRouteImport } from './routes/lab'
-import { Route as JunkyardRouteImport } from './routes/junkyard'
-import { Route as JourneyRouteImport } from './routes/journey'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WritingSlugRouteImport } from './routes/writing.$slug'
-import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
-import { Route as LabSlugRouteImport } from './routes/lab.$slug'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as JourneyRouteImport } from './routes/journey'
+import { Route as PodcastRouteImport } from './routes/podcast'
+import { Route as ResumeRouteImport } from './routes/resume'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as JunkyardIndexRouteImport } from './routes/junkyard.index'
 import { Route as JunkyardSlugRouteImport } from './routes/junkyard.$slug'
+import { Route as LabIndexRouteImport } from './routes/lab.index'
+import { Route as LabSlugRouteImport } from './routes/lab.$slug'
+import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
+import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
+import { Route as WritingIndexRouteImport } from './routes/writing.index'
+import { Route as WritingSlugRouteImport } from './routes/writing.$slug'
+import { Route as AdminTableIndexRouteImport } from './routes/admin.$table.index'
+import { Route as AdminTableIdRouteImport } from './routes/admin.$table.$id'
 
-const WritingRoute = WritingRouteImport.update({
-  id: '/writing',
-  path: '/writing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResumeRoute = ResumeRouteImport.update({
-  id: '/resume',
-  path: '/resume',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PodcastRoute = PodcastRouteImport.update({
-  id: '/podcast',
-  path: '/podcast',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabRoute = LabRouteImport.update({
-  id: '/lab',
-  path: '/lab',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JunkyardRoute = JunkyardRouteImport.update({
-  id: '/junkyard',
-  path: '/junkyard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JourneyRoute = JourneyRouteImport.update({
-  id: '/journey',
-  path: '/journey',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -57,174 +37,222 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WritingSlugRoute = WritingSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => WritingRoute,
+const JourneyRoute = JourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodcastRoute = PodcastRouteImport.update({
+  id: '/podcast',
+  path: '/podcast',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResumeRoute = ResumeRouteImport.update({
+  id: '/resume',
+  path: '/resume',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const JunkyardIndexRoute = JunkyardIndexRouteImport.update({
+  id: '/junkyard/',
+  path: '/junkyard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JunkyardSlugRoute = JunkyardSlugRouteImport.update({
+  id: '/junkyard/$slug',
+  path: '/junkyard/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabIndexRoute = LabIndexRouteImport.update({
+  id: '/lab/',
+  path: '/lab/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabSlugRoute = LabSlugRouteImport.update({
+  id: '/lab/$slug',
+  path: '/lab/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   id: '/projects/$slug',
   path: '/projects/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LabSlugRoute = LabSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => LabRoute,
+const WritingIndexRoute = WritingIndexRouteImport.update({
+  id: '/writing/',
+  path: '/writing/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const JunkyardSlugRoute = JunkyardSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => JunkyardRoute,
+const WritingSlugRoute = WritingSlugRouteImport.update({
+  id: '/writing/$slug',
+  path: '/writing/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTableIndexRoute = AdminTableIndexRouteImport.update({
+  id: '/$table/',
+  path: '/$table/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTableIdRoute = AdminTableIdRouteImport.update({
+  id: '/$table/$id',
+  path: '/$table/$id',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/journey': typeof JourneyRoute
-  '/junkyard': typeof JunkyardRouteWithChildren
-  '/lab': typeof LabRouteWithChildren
   '/podcast': typeof PodcastRoute
   '/resume': typeof ResumeRoute
-  '/writing': typeof WritingRouteWithChildren
   '/junkyard/$slug': typeof JunkyardSlugRoute
   '/lab/$slug': typeof LabSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/writing/$slug': typeof WritingSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/junkyard/': typeof JunkyardIndexRoute
+  '/lab/': typeof LabIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/writing/': typeof WritingIndexRoute
+  '/admin/$table/$id': typeof AdminTableIdRoute
+  '/admin/$table/': typeof AdminTableIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/journey': typeof JourneyRoute
-  '/junkyard': typeof JunkyardRouteWithChildren
-  '/lab': typeof LabRouteWithChildren
   '/podcast': typeof PodcastRoute
   '/resume': typeof ResumeRoute
-  '/writing': typeof WritingRouteWithChildren
   '/junkyard/$slug': typeof JunkyardSlugRoute
   '/lab/$slug': typeof LabSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/writing/$slug': typeof WritingSlugRoute
+  '/admin': typeof AdminIndexRoute
+  '/junkyard': typeof JunkyardIndexRoute
+  '/lab': typeof LabIndexRoute
+  '/projects': typeof ProjectsIndexRoute
+  '/writing': typeof WritingIndexRoute
+  '/admin/$table/$id': typeof AdminTableIdRoute
+  '/admin/$table': typeof AdminTableIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/journey': typeof JourneyRoute
-  '/junkyard': typeof JunkyardRouteWithChildren
-  '/lab': typeof LabRouteWithChildren
   '/podcast': typeof PodcastRoute
   '/resume': typeof ResumeRoute
-  '/writing': typeof WritingRouteWithChildren
   '/junkyard/$slug': typeof JunkyardSlugRoute
   '/lab/$slug': typeof LabSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/writing/$slug': typeof WritingSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/junkyard/': typeof JunkyardIndexRoute
+  '/lab/': typeof LabIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/writing/': typeof WritingIndexRoute
+  '/admin/$table/$id': typeof AdminTableIdRoute
+  '/admin/$table/': typeof AdminTableIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/journey'
-    | '/junkyard'
-    | '/lab'
     | '/podcast'
     | '/resume'
-    | '/writing'
     | '/junkyard/$slug'
     | '/lab/$slug'
     | '/projects/$slug'
     | '/writing/$slug'
+    | '/admin/'
+    | '/junkyard/'
+    | '/lab/'
+    | '/projects/'
+    | '/writing/'
+    | '/admin/$table/$id'
+    | '/admin/$table/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/journey'
-    | '/junkyard'
-    | '/lab'
     | '/podcast'
     | '/resume'
-    | '/writing'
     | '/junkyard/$slug'
     | '/lab/$slug'
     | '/projects/$slug'
     | '/writing/$slug'
+    | '/admin'
+    | '/junkyard'
+    | '/lab'
+    | '/projects'
+    | '/writing'
+    | '/admin/$table/$id'
+    | '/admin/$table'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/journey'
-    | '/junkyard'
-    | '/lab'
     | '/podcast'
     | '/resume'
-    | '/writing'
     | '/junkyard/$slug'
     | '/lab/$slug'
     | '/projects/$slug'
     | '/writing/$slug'
+    | '/admin/'
+    | '/junkyard/'
+    | '/lab/'
+    | '/projects/'
+    | '/writing/'
+    | '/admin/$table/$id'
+    | '/admin/$table/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   JourneyRoute: typeof JourneyRoute
-  JunkyardRoute: typeof JunkyardRouteWithChildren
-  LabRoute: typeof LabRouteWithChildren
   PodcastRoute: typeof PodcastRoute
   ResumeRoute: typeof ResumeRoute
-  WritingRoute: typeof WritingRouteWithChildren
+  JunkyardSlugRoute: typeof JunkyardSlugRoute
+  LabSlugRoute: typeof LabSlugRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
+  WritingSlugRoute: typeof WritingSlugRoute
+  JunkyardIndexRoute: typeof JunkyardIndexRoute
+  LabIndexRoute: typeof LabIndexRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
+  WritingIndexRoute: typeof WritingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/writing': {
-      id: '/writing'
-      path: '/writing'
-      fullPath: '/writing'
-      preLoaderRoute: typeof WritingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resume': {
-      id: '/resume'
-      path: '/resume'
-      fullPath: '/resume'
-      preLoaderRoute: typeof ResumeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/podcast': {
-      id: '/podcast'
-      path: '/podcast'
-      fullPath: '/podcast'
-      preLoaderRoute: typeof PodcastRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab': {
-      id: '/lab'
-      path: '/lab'
-      fullPath: '/lab'
-      preLoaderRoute: typeof LabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/junkyard': {
-      id: '/junkyard'
-      path: '/junkyard'
-      fullPath: '/junkyard'
-      preLoaderRoute: typeof JunkyardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/journey': {
-      id: '/journey'
-      path: '/journey'
-      fullPath: '/journey'
-      preLoaderRoute: typeof JourneyRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -234,19 +262,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/writing/$slug': {
-      id: '/writing/$slug'
-      path: '/$slug'
-      fullPath: '/writing/$slug'
-      preLoaderRoute: typeof WritingSlugRouteImport
-      parentRoute: typeof WritingRoute
+    '/journey': {
+      id: '/journey'
+      path: '/journey'
+      fullPath: '/journey'
+      preLoaderRoute: typeof JourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podcast': {
+      id: '/podcast'
+      path: '/podcast'
+      fullPath: '/podcast'
+      preLoaderRoute: typeof PodcastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resume': {
+      id: '/resume'
+      path: '/resume'
+      fullPath: '/resume'
+      preLoaderRoute: typeof ResumeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/junkyard/': {
+      id: '/junkyard/'
+      path: '/junkyard'
+      fullPath: '/junkyard/'
+      preLoaderRoute: typeof JunkyardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/junkyard/$slug': {
+      id: '/junkyard/$slug'
+      path: '/junkyard/$slug'
+      fullPath: '/junkyard/$slug'
+      preLoaderRoute: typeof JunkyardSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab/': {
+      id: '/lab/'
+      path: '/lab'
+      fullPath: '/lab/'
+      preLoaderRoute: typeof LabIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab/$slug': {
+      id: '/lab/$slug'
+      path: '/lab/$slug'
+      fullPath: '/lab/$slug'
+      preLoaderRoute: typeof LabSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/projects/$slug': {
       id: '/projects/$slug'
@@ -255,67 +339,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lab/$slug': {
-      id: '/lab/$slug'
-      path: '/$slug'
-      fullPath: '/lab/$slug'
-      preLoaderRoute: typeof LabSlugRouteImport
-      parentRoute: typeof LabRoute
+    '/writing/': {
+      id: '/writing/'
+      path: '/writing'
+      fullPath: '/writing/'
+      preLoaderRoute: typeof WritingIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/junkyard/$slug': {
-      id: '/junkyard/$slug'
-      path: '/$slug'
-      fullPath: '/junkyard/$slug'
-      preLoaderRoute: typeof JunkyardSlugRouteImport
-      parentRoute: typeof JunkyardRoute
+    '/writing/$slug': {
+      id: '/writing/$slug'
+      path: '/writing/$slug'
+      fullPath: '/writing/$slug'
+      preLoaderRoute: typeof WritingSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/$table/': {
+      id: '/admin/$table/'
+      path: '/$table'
+      fullPath: '/admin/$table/'
+      preLoaderRoute: typeof AdminTableIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/$table/$id': {
+      id: '/admin/$table/$id'
+      path: '/$table/$id'
+      fullPath: '/admin/$table/$id'
+      preLoaderRoute: typeof AdminTableIdRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
 
-interface JunkyardRouteChildren {
-  JunkyardSlugRoute: typeof JunkyardSlugRoute
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminTableIdRoute: typeof AdminTableIdRoute
+  AdminTableIndexRoute: typeof AdminTableIndexRoute
 }
 
-const JunkyardRouteChildren: JunkyardRouteChildren = {
-  JunkyardSlugRoute: JunkyardSlugRoute,
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+  AdminTableIdRoute: AdminTableIdRoute,
+  AdminTableIndexRoute: AdminTableIndexRoute,
 }
 
-const JunkyardRouteWithChildren = JunkyardRoute._addFileChildren(
-  JunkyardRouteChildren,
-)
-
-interface LabRouteChildren {
-  LabSlugRoute: typeof LabSlugRoute
-}
-
-const LabRouteChildren: LabRouteChildren = {
-  LabSlugRoute: LabSlugRoute,
-}
-
-const LabRouteWithChildren = LabRoute._addFileChildren(LabRouteChildren)
-
-interface WritingRouteChildren {
-  WritingSlugRoute: typeof WritingSlugRoute
-}
-
-const WritingRouteChildren: WritingRouteChildren = {
-  WritingSlugRoute: WritingSlugRoute,
-}
-
-const WritingRouteWithChildren =
-  WritingRoute._addFileChildren(WritingRouteChildren)
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   JourneyRoute: JourneyRoute,
-  JunkyardRoute: JunkyardRouteWithChildren,
-  LabRoute: LabRouteWithChildren,
   PodcastRoute: PodcastRoute,
   ResumeRoute: ResumeRoute,
-  WritingRoute: WritingRouteWithChildren,
+  JunkyardSlugRoute: JunkyardSlugRoute,
+  LabSlugRoute: LabSlugRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
+  WritingSlugRoute: WritingSlugRoute,
+  JunkyardIndexRoute: JunkyardIndexRoute,
+  LabIndexRoute: LabIndexRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
+  WritingIndexRoute: WritingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
