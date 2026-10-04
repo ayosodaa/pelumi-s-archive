@@ -12,6 +12,7 @@ export function SiteNav({
   brand?: string | null;
 }) {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -19,12 +20,13 @@ export function SiteNav({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const transparent = overHero && !scrolled;
+  const transparent = overHero && !scrolled && !open;
   const fallback: NavItem[] = [
     { id: "1", label: "The Journey", url: "/journey", location: "header" },
     { id: "2", label: "The Lab", url: "/lab", location: "header" },
     { id: "3", label: "Junkyard", url: "/junkyard", location: "header" },
     { id: "4", label: "Writing", url: "/writing", location: "header" },
+    { id: "6", label: "Projects", url: "/projects", location: "header" },
     { id: "5", label: "About", url: "/about", location: "header" },
   ];
   const items = nav.length ? nav : fallback;
@@ -48,10 +50,29 @@ export function SiteNav({
             </a>
           ))}
         </div>
-        <a href="/about" className="md:hidden text-[11px] uppercase tracking-[0.22em] font-medium">
-          Menu
-        </a>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+          className="md:hidden text-[11px] uppercase tracking-[0.22em] font-medium"
+        >
+          {open ? "Close" : "Menu"}
+        </button>
       </div>
+      {open && (
+        <div id="mobile-menu" className="md:hidden border-t border-ink/10 bg-paper text-ink">
+          <ul className="max-w-[1400px] mx-auto px-6 py-6 space-y-4">
+            {items.map((l) => (
+              <li key={l.id}>
+                <a href={l.url} onClick={() => setOpen(false)} className="block font-serif text-2xl hover:text-clay">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </nav>
   );
 }

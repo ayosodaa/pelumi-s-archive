@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
+import { canonical } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ToolCard } from "@/components/site/ToolCard";
 import { listTools, listEras, getNavigation, getSocialLinks, getSettings, type Tool } from "@/lib/db";
 
-export const Route = createFileRoute("/lab")({
+export const Route = createFileRoute("/lab/")({
   loader: async () => {
     const [tools, eras, nav, socials, settings] = await Promise.all([listTools(), listEras(), getNavigation("header"), getSocialLinks(), getSettings()]);
     return { tools, eras, nav, socials, settings };
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/lab")({
       { property: "og:title", content: "The Lab" },
       { property: "og:description", content: "A public workshop of tools, templates, and decision frameworks." },
     ],
-    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/lab" }],
+    links: [canonical("/lab")],
   }),
   errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: LabPage,

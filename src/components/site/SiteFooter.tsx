@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { stripMarkdown } from "@/lib/utils";
 import type { SocialLink, WebsiteSettings, Era } from "@/lib/db";
 
 export function SiteFooter({
@@ -15,7 +16,7 @@ export function SiteFooter({
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-20 grid grid-cols-1 md:grid-cols-12 gap-12">
         <div className="md:col-span-5">
           <p className="font-serif text-3xl leading-tight text-balance mb-6">{settings.tagline}</p>
-          <p className="text-sm text-ink/60 max-w-md">{settings.about_text}</p>
+          <p className="text-sm text-ink/60 max-w-md line-clamp-4">{stripMarkdown(settings.about_text)}</p>
           {settings.contact_email && (
             <a
               href={`mailto:${settings.contact_email}`}
@@ -43,9 +44,11 @@ export function SiteFooter({
         <div className="md:col-span-2">
           <h4 className="text-[10px] uppercase tracking-[0.25em] font-bold text-ink/40 mb-6">Sections</h4>
           <ul className="space-y-3 text-sm">
+            <li><Link to="/projects" className="hover:text-clay">Projects</Link></li>
             <li><Link to="/lab" className="hover:text-clay">The Lab</Link></li>
             <li><Link to="/junkyard" className="hover:text-clay">Junkyard</Link></li>
             <li><Link to="/writing" className="hover:text-clay">Writing</Link></li>
+            <li><Link to="/resume" className="hover:text-clay">Resume</Link></li>
             <li><Link to="/about" className="hover:text-clay">About</Link></li>
           </ul>
         </div>

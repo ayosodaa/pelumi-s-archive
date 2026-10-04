@@ -1,3 +1,4 @@
+import { canonical } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/podcast")({
       { property: "og:title", content: "Podcast & Media" },
       { property: "og:description", content: "Conversations, interviews, and recordings from the archive." },
     ],
-    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/podcast" }],
+    links: [canonical("/podcast")],
   }),
   errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: PodcastPage,

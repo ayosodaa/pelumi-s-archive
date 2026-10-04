@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
+import { canonical } from "@/lib/site";
+import { formatDate } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { listWriting, listEras, getNavigation, getSocialLinks, getSettings, type Writing } from "@/lib/db";
 
-export const Route = createFileRoute("/writing")({
+export const Route = createFileRoute("/writing/")({
   loader: async () => {
     const [writings, eras, nav, socials, settings] = await Promise.all([listWriting(), listEras(), getNavigation("header"), getSocialLinks(), getSettings()]);
     return { writings, eras, nav, socials, settings };
@@ -16,7 +18,7 @@ export const Route = createFileRoute("/writing")({
       { property: "og:title", content: "Writing & Media" },
       { property: "og:description", content: "Essays, reflections, and poetry — the parallel practice that keeps the systems work honest." },
     ],
-    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/writing" }],
+    links: [canonical("/writing")],
   }),
   errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: WritingPage,
@@ -61,12 +63,12 @@ function WritingPage() {
           {filtered.map((w) => (
             <Link key={w.slug} to="/writing/$slug" params={{ slug: w.slug }} className="block py-8 md:py-10 border-b border-ink/10 group">
               <div className="grid grid-cols-12 gap-4 items-baseline">
-                <time className="col-span-12 md:col-span-2 text-[10px] font-mono uppercase tracking-[0.22em] text-ink/45">{w.publish_date}</time>
+                <time className="col-span-12 md:col-span-2 text-[10px] font-mono uppercase tracking-[0.22em] text-ink/45">{formatDate(w.publish_date)}</time>
                 <div className="col-span-12 md:col-span-8">
                   <h2 className="font-serif text-3xl md:text-4xl leading-tight tracking-tight group-hover:text-clay transition-colors">{w.title}</h2>
                   <p className="mt-3 text-ink/65 max-w-2xl">{w.excerpt}</p>
                 </div>
-                <div className="col-span-12 md:col-span-2 md:text-right text-[10px] font-mono uppercase tracking-[0.22em] text-ink/40">{w.category} · {w.reading_minutes}m</div>
+                <div className="col-span-12 md:col-span-2 md:text-right text-[10px] font-mono uppercase tracking-[0.22em] text-ink/40">{[w.category, w.reading_minutes ? `${w.reading_minutes}m` : null].filter(Boolean).join(" · ")}</div>
               </div>
             </Link>
           ))}

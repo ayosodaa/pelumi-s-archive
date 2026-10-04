@@ -1,3 +1,4 @@
+import { canonical } from "@/lib/site";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -31,13 +32,13 @@ export const Route = createFileRoute("/projects/$slug")({
             : []),
         ]
       : [{ title: "Project — Oluwapelumi Samuel" }],
-    links: [{ rel: "canonical", href: `https://pelumi-archive-lab.lovable.app/projects/${params.slug}` }],
+    links: [canonical(`/projects/${params.slug}`)],
   }),
   notFoundComponent: () => (
     <main className="min-h-screen grid place-items-center bg-paper text-ink p-8">
       <div className="text-center">
         <h1 className="font-serif text-5xl mb-4">Project not found.</h1>
-        <Link to="/journey" className="text-clay underline">Back to the journey</Link>
+        <Link to="/projects" className="text-clay underline">Back to projects</Link>
       </div>
     </main>
   ),
@@ -53,7 +54,7 @@ function ProjectPage() {
     <main className="bg-paper text-ink min-h-screen">
       <SiteNav nav={nav} brand={settings.site_short} />
       <article className="px-6 md:px-12 pt-32 md:pt-40 pb-24 max-w-[1100px] mx-auto">
-        <Link to="/" className="text-[10px] uppercase tracking-[0.25em] font-medium text-ink/50 hover:text-clay">← Archive</Link>
+        <Link to="/projects" className="text-[10px] uppercase tracking-[0.25em] font-medium text-ink/50 hover:text-clay">← All projects</Link>
         <p className="mt-10 text-[10px] uppercase tracking-[0.3em] font-bold text-clay">
           {project.category}{project.status ? ` · ${project.status}` : ""}
         </p>

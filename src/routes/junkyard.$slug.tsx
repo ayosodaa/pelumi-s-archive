@@ -1,3 +1,4 @@
+import { canonical } from "@/lib/site";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/junkyard/$slug")({
           { property: "og:type", content: "article" },
         ]
       : [{ title: "The Junkyard — Oluwapelumi Samuel" }],
-    links: [{ rel: "canonical", href: `https://pelumi-archive-lab.lovable.app/junkyard/${params.slug}` }],
+    links: [canonical(`/junkyard/${params.slug}`)],
   }),
   notFoundComponent: () => (
     <main className="min-h-screen grid place-items-center bg-earth/95 text-paper p-8">

@@ -1,3 +1,4 @@
+import { canonical } from "@/lib/site";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/lab/$slug")({
             : []),
         ]
       : [{ title: "The Lab — Oluwapelumi Samuel" }],
-    links: [{ rel: "canonical", href: `https://pelumi-archive-lab.lovable.app/lab/${params.slug}` }],
+    links: [canonical(`/lab/${params.slug}`)],
   }),
   notFoundComponent: () => (
     <main className="min-h-screen grid place-items-center bg-paper text-ink p-8">

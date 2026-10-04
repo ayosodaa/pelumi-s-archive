@@ -84,6 +84,7 @@ export type WebsiteSettings = {
   seo_title: string | null;
   seo_description: string | null;
   seo_og_image: string | null;
+  about_image_url: string | null;
   resume_intro: string | null;
   resume_pdf_url: string | null;
 };
@@ -141,7 +142,8 @@ export async function getSettings(): Promise<WebsiteSettings> {
     footer_text: data?.footer_text ?? null,
     seo_title: data?.seo_title ?? null,
     seo_description: data?.seo_description ?? null,
-    seo_og_image: data?.seo_og_image ?? null,
+    seo_og_image: publicUrl("hero", data?.seo_og_image ?? null),
+    about_image_url: publicUrl("hero", (data as { about_image_path?: string | null } | null)?.about_image_path ?? null),
     resume_intro: (data as { resume_intro?: string | null } | null)?.resume_intro ?? null,
     resume_pdf_url: publicUrl("downloads", (data as { resume_pdf_path?: string | null } | null)?.resume_pdf_path ?? null),
   };

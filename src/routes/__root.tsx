@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import heroPortrait from "@/assets/hero-portrait.jpg";
+import { absoluteUrl } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
@@ -32,7 +34,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
   console.error(error);
   const router = useRouter();
 
@@ -88,11 +90,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Oluwapelumi Samuel — Building systems across Africa" },
-      { name: "description", content: "A dynamic digital archive, lab, and portfolio showcasing explorations in systems, programmes, and ideas across Africa." },
-      { property: "og:description", content: "A dynamic digital archive, lab, and portfolio showcasing explorations in systems, programmes, and ideas across Africa." },
-      { name: "twitter:description", content: "A dynamic digital archive, lab, and portfolio showcasing explorations in systems, programmes, and ideas across Africa." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6fc56ac2-5d37-45db-905b-1d999192e875/id-preview-c243c915--2718cd3a-cbe7-4290-8dda-e52cc3ee3e24.lovable.app-1778670405676.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6fc56ac2-5d37-45db-905b-1d999192e875/id-preview-c243c915--2718cd3a-cbe7-4290-8dda-e52cc3ee3e24.lovable.app-1778670405676.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Programme operations, ecosystem building, conservation, technology, writing, and experiments — documented as a living archive.",
+      },
+      { property: "og:image", content: absoluteUrl(heroPortrait) ?? "" },
+      { name: "twitter:image", content: absoluteUrl(heroPortrait) ?? "" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
