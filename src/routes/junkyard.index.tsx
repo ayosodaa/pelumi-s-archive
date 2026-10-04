@@ -1,10 +1,11 @@
+import { canonical } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { JunkCard } from "@/components/site/JunkCard";
 import { listJunkyard, listEras, getNavigation, getSocialLinks, getSettings, type JunkItem } from "@/lib/db";
 
-export const Route = createFileRoute("/junkyard")({
+export const Route = createFileRoute("/junkyard/")({
   loader: async () => {
     const [items, eras, nav, socials, settings] = await Promise.all([listJunkyard(), listEras(), getNavigation("header"), getSocialLinks(), getSettings()]);
     return { items, eras, nav, socials, settings };
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/junkyard")({
       { property: "og:title", content: "The Junkyard" },
       { property: "og:description", content: "A scrapbook of failed experiments, abandoned prototypes, and lessons learned." },
     ],
-    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/junkyard" }],
+    links: [canonical("/junkyard")],
   }),
   errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: JunkyardPage,

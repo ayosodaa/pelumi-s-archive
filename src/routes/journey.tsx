@@ -1,3 +1,4 @@
+import { canonical } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/journey")({
       { property: "og:title", content: "The Journey So Far" },
       { property: "og:description", content: "Seven eras of building, breaking, and re-building across Africa." },
     ],
-    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/journey" }],
+    links: [canonical("/journey")],
   }),
   errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: JourneyPage,

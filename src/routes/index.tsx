@@ -1,3 +1,5 @@
+import { formatDate } from "@/lib/utils";
+import { canonical } from "@/lib/site";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { SiteNav } from "@/components/site/SiteNav";
@@ -19,7 +21,14 @@ export const Route = createFileRoute("/")({
       { name: "description", content: loaderData?.settings.seo_description ?? "" },
       { property: "og:title", content: loaderData?.settings.seo_title ?? "" },
       { property: "og:description", content: loaderData?.settings.seo_description ?? "" },
+      ...(loaderData?.settings.seo_og_image
+        ? [
+            { property: "og:image", content: loaderData.settings.seo_og_image },
+            { name: "twitter:image", content: loaderData.settings.seo_og_image },
+          ]
+        : []),
     ],
+    links: [canonical("/")],
   }),
   errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: HomePage,
@@ -105,12 +114,12 @@ function HomePage() {
               <motion.div key={w.slug} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5, delay: i * 0.06 }}>
                 <Link to="/writing/$slug" params={{ slug: w.slug }} className="block py-6 border-t border-ink/10 group">
                   <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8">
-                    <time className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink/45 md:w-24 shrink-0">{w.publish_date}</time>
+                    <time className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink/45 md:w-24 shrink-0">{formatDate(w.publish_date)}</time>
                     <div className="flex-1">
                       <h3 className="font-serif text-2xl md:text-3xl leading-tight tracking-tight group-hover:text-clay transition-colors">{w.title}</h3>
                       <p className="mt-2 text-ink/60 max-w-xl">{w.excerpt}</p>
                     </div>
-                    <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink/40 shrink-0">{w.category} · {w.reading_minutes}m</span>
+                    <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-ink/40 shrink-0">{[w.category, w.reading_minutes ? `${w.reading_minutes}m` : null].filter(Boolean).join(" · ")}</span>
                   </div>
                 </Link>
               </motion.div>

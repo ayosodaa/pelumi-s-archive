@@ -1,7 +1,10 @@
+import { canonical } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { ImagePlaceholder } from "@/components/site/ImagePlaceholder";
+import { stripMarkdown } from "@/lib/utils";
+import { Markdown } from "@/components/site/Markdown";
+import heroPortrait from "@/assets/hero-portrait.jpg";
 import { getSettings, getSocialLinks, listEras, getNavigation } from "@/lib/db";
 
 export const Route = createFileRoute("/about")({
@@ -12,11 +15,11 @@ export const Route = createFileRoute("/about")({
   head: ({ loaderData }) => ({
     meta: [
       { title: `About — ${loaderData?.settings.site_title ?? "Oluwapelumi Samuel"}` },
-      { name: "description", content: (loaderData?.settings.about_text ?? "").slice(0, 160) },
+      { name: "description", content: stripMarkdown(loaderData?.settings.about_text).slice(0, 160) },
       { property: "og:title", content: `About — ${loaderData?.settings.site_title ?? ""}` },
-      { property: "og:description", content: (loaderData?.settings.about_text ?? "").slice(0, 160) },
+      { property: "og:description", content: stripMarkdown(loaderData?.settings.about_text).slice(0, 160) },
     ],
-    links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/about" }],
+    links: [canonical("/about")],
   }),
   errorComponent: ({ error }) => { console.error(error); return <div className="p-12">Something went wrong. Please try again later.</div>; },
   component: AboutPage,
@@ -24,7 +27,6 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   const { settings, socials, eras, nav } = Route.useLoaderData();
-  const paragraphs = (settings.about_text ?? "").split(/\n\n+/);
   return (
     <main className="bg-paper text-ink min-h-screen">
       <SiteNav nav={nav} brand={settings.site_short} />
@@ -34,9 +36,7 @@ function AboutPage() {
           <h1 className="font-serif text-5xl md:text-6xl leading-[0.98] tracking-tight text-balance">
             <span className="italic">{settings.site_title}</span>
           </h1>
-          <div className="mt-10 space-y-6 font-serif text-xl leading-relaxed text-ink/80">
-            {paragraphs.map((p: string, i: number) => <p key={i} className="whitespace-pre-line">{p}</p>)}
-          </div>
+          <Markdown className="mt-10">{settings.about_text}</Markdown>
           {settings.contact_email && (
             <div className="mt-14 border-t border-ink/10 pt-10">
               <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-clay mb-6">Get in touch</p>
@@ -53,7 +53,16 @@ function AboutPage() {
         </div>
         <aside className="md:col-span-5 md:pl-8">
           <div className="md:sticky md:top-28 space-y-4">
-            <ImagePlaceholder caption="Portrait — replace via backend" aspect="aspect-[4/5]" />
+            {settings.about_image_url || settings.hero_image_url ? (
+              <img
+                src={(settings.about_image_url || settings.hero_image_url)!}
+                alt={settings.site_title ?? "Portrait"}
+                className="w-full aspect-[4/5] object-cover rounded-sm"
+                loading="lazy"
+              />
+            ) : (
+              <img src={heroPortrait} alt={settings.site_title ?? "Portrait"} className="w-full aspect-[4/5] object-cover rounded-sm" loading="lazy" />
+            )}
           </div>
         </aside>
       </section>

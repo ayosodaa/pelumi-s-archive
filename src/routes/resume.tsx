@@ -1,3 +1,4 @@
+import { canonical } from "@/lib/site";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/resume")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
       ],
-      links: [{ rel: "canonical", href: "https://pelumi-archive-lab.lovable.app/resume" }],
+      links: [canonical("/resume")],
     };
   },
   errorComponent: ({ error }) => {
