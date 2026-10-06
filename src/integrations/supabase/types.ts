@@ -477,8 +477,6 @@ export type Database = {
           code: string | null
           created_at: string
           description: string | null
-          embed_url: string | null
-          show_embed: boolean
           downloadable_resources: Json
           format: string | null
           id: string
@@ -495,8 +493,6 @@ export type Database = {
           code?: string | null
           created_at?: string
           description?: string | null
-          embed_url?: string | null
-          show_embed?: boolean
           downloadable_resources?: Json
           format?: string | null
           id?: string
@@ -513,8 +509,6 @@ export type Database = {
           code?: string | null
           created_at?: string
           description?: string | null
-          embed_url?: string | null
-          show_embed?: boolean
           downloadable_resources?: Json
           format?: string | null
           id?: string
