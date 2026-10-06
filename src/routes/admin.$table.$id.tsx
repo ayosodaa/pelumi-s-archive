@@ -14,8 +14,8 @@ export const Route = createFileRoute("/admin/$table/$id")({
 function emptyValues(ct: ContentType): Record<string, unknown> {
   const v: Record<string, unknown> = {};
   for (const f of ct.fields) {
-    if (f.type === "boolean") v[f.name] = f.name === "published" ? ct.table !== "writing" : false;
-    else if (f.type === "tags" || f.type === "list" || f.type === "links") v[f.name] = [];
+    if (f.type === "boolean") v[f.name] = f.name === "published" ? ct.table !== "writing" : f.name === "show_embed";
+    else if (f.type === "tags" || f.type === "list" || f.type === "links" || f.type === "images") v[f.name] = [];
     else if (f.type === "select") v[f.name] = f.options?.[0]?.value ?? "";
     else if (f.type === "date") v[f.name] = ct.table === "writing" ? new Date().toISOString().slice(0, 10) : null;
     else v[f.name] = null;

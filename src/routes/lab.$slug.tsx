@@ -3,6 +3,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ImagePlaceholder } from "@/components/site/ImagePlaceholder";
+import { ToolEmbed } from "@/components/site/ToolEmbed";
+import { toEmbedUrl } from "@/lib/embed";
 import { getTool, listEras, getNavigation, getSocialLinks, getSettings, type Tool } from "@/lib/db";
 
 export const Route = createFileRoute("/lab/$slug")({
@@ -48,13 +50,14 @@ function ToolPage() {
   const { tool, eras, nav, socials, settings } = Route.useLoaderData() as {
     tool: Tool; eras: any; nav: any; socials: any; settings: any;
   };
+  const embedSrc = tool.show_embed ? toEmbedUrl(tool.embed_url || tool.tool_url) : null;
   return (
     <main className="bg-paper text-ink min-h-screen">
       <SiteNav nav={nav} brand={settings.site_short} />
       <article className="px-6 md:px-12 pt-32 md:pt-40 pb-24 max-w-[1100px] mx-auto">
         <Link to="/lab" className="text-[10px] uppercase tracking-[0.25em] font-medium text-ink/50 hover:text-clay">← The Lab</Link>
         <p className="mt-10 text-[10px] uppercase tracking-[0.3em] font-bold text-clay">
-          {tool.code} · {tool.category} · {tool.format}
+          {[tool.code, tool.category, tool.format].filter(Boolean).join(" · ")}
         </p>
         <h1 className="mt-5 font-serif text-5xl md:text-6xl leading-[0.98] tracking-tight text-balance">{tool.tool_name}</h1>
         {tool.description && (
@@ -67,15 +70,17 @@ function ToolPage() {
           </a>
         )}
 
+        {embedSrc && <ToolEmbed src={embedSrc} title={tool.tool_name} openUrl={tool.tool_url || embedSrc} />}
+
         {tool.screenshots.length > 0 ? (
           <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-4">
             {tool.screenshots.map((s, i) => (
               <img key={i} src={s} alt={`${tool.tool_name} screenshot ${i + 1}`} loading="lazy" className="w-full aspect-[4/3] object-cover border border-ink/10" />
             ))}
           </div>
-        ) : (
+        ) : !embedSrc ? (
           <div className="mt-14"><ImagePlaceholder caption={`${tool.tool_name} — preview`} aspect="aspect-[16/9]" /></div>
-        )}
+        ) : null}
       </article>
       <SiteFooter settings={settings} socials={socials} eras={eras} />
     </main>
