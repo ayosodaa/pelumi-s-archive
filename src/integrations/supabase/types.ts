@@ -477,13 +477,13 @@ export type Database = {
           code: string | null
           created_at: string
           description: string | null
-          embed_url: string | null
-          show_embed: boolean
           downloadable_resources: Json
+          embed_url: string | null
           format: string | null
           id: string
           published: boolean
           screenshots: string[]
+          show_embed: boolean
           slug: string
           sort_order: number
           tool_name: string
@@ -495,13 +495,13 @@ export type Database = {
           code?: string | null
           created_at?: string
           description?: string | null
-          embed_url?: string | null
-          show_embed?: boolean
           downloadable_resources?: Json
+          embed_url?: string | null
           format?: string | null
           id?: string
           published?: boolean
           screenshots?: string[]
+          show_embed?: boolean
           slug: string
           sort_order?: number
           tool_name: string
@@ -513,13 +513,13 @@ export type Database = {
           code?: string | null
           created_at?: string
           description?: string | null
-          embed_url?: string | null
-          show_embed?: boolean
           downloadable_resources?: Json
+          embed_url?: string | null
           format?: string | null
           id?: string
           published?: boolean
           screenshots?: string[]
+          show_embed?: boolean
           slug?: string
           sort_order?: number
           tool_name?: string
