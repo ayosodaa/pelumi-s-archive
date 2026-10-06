@@ -23,6 +23,8 @@ export type Tool = {
   format: string | null;
   category: string | null;
   tool_url: string | null;
+  embed_url: string | null;
+  show_embed: boolean;
   screenshots: string[];
 };
 
@@ -242,6 +244,8 @@ export async function listTools(): Promise<Tool[]> {
     format: r.format,
     category: r.category,
     tool_url: r.tool_url,
+    embed_url: r.embed_url ?? null,
+    show_embed: r.show_embed ?? true,
     screenshots: ((r.screenshots as string[]) ?? []).map((p) => publicUrl("tools", p)!).filter(Boolean),
   }));
 }

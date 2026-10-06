@@ -12,6 +12,7 @@ export type FieldType =
   | "tags" // text[] edited as comma-separated values
   | "list" // text[] edited one item per line
   | "image" // storage path in `bucket`
+  | "images" // text[] of storage paths in `bucket`
   | "file" // storage path in `bucket` (PDFs etc.)
   | "links" // jsonb [{ label, url }]
   | "select" // fixed options
@@ -147,7 +148,10 @@ export const contentTypes: ContentType[] = [
       { name: "description", label: "Description", type: "textarea" },
       { name: "format", label: "Format", type: "text", placeholder: "Spreadsheet, Notion template, Framework" },
       { name: "category", label: "Category", type: "text" },
-      { name: "tool_url", label: "Link to the tool", type: "text", placeholder: "https://" },
+      { name: "tool_url", label: "Link to the tool", type: "text", placeholder: "https://", help: "Google Docs, Sheets, Slides, Drive, Figma, Canva, Miro, Airtable, YouTube and Loom links are shown inside the page automatically. Make sure the link is shared publicly." },
+      { name: "show_embed", label: "Show the tool inside the page", type: "boolean", help: "Turn this off if the tool's website refuses to load inside other sites." },
+      { name: "embed_url", label: "Embed link (optional)", type: "text", placeholder: "https://", help: "Only needed if the service gives you a separate embed link, for example from its Share > Embed menu. Leave empty to use the link above." },
+      { name: "screenshots", label: "Screenshots", type: "images", bucket: "tools", help: "Shown below the preview. Useful when the tool cannot be embedded." },
       published,
     ],
   },

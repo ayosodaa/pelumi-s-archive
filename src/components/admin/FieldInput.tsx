@@ -49,6 +49,8 @@ export function FieldInput({ field, value, onChange }: Props) {
     case "image":
     case "file":
       return <UploadInput field={field} value={(value as string) ?? null} onChange={onChange} />;
+    case "images":
+      return <ImagesInput field={field} value={(value as string[]) ?? []} onChange={onChange} />;
     case "relation":
       return <RelationInput field={field} value={(value as string) ?? null} onChange={onChange} />;
   }
@@ -165,5 +167,51 @@ function RelationInput({ field, value, onChange }: { field: Field; value: string
       <option value="">None</option>
       {options.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
     </select>
+  );
+}
+
+function ImagesInput({ field, value, onChange }: { field: Field; value: string[]; onChange: (v: unknown) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function pick(files: FileList | null) {
+    if (!files?.length || !field.bucket) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const paths: string[] = [];
+      for (const file of Array.from(files)) paths.push(await uploadFile(field.bucket, file));
+      onChange([...value, ...paths]);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setBusy(false);
+      if (ref.current) ref.current.value = "";
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      {value.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {value.map((p, i) => (
+            <div key={p} className="relative group">
+              <img src={fileUrl(field.bucket, p) ?? ""} alt="" className="w-full aspect-[4/3] object-cover rounded border border-ink/10" />
+              <div className="absolute inset-x-1 bottom-1 flex justify-between gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+                <button type="button" disabled={i === 0} onClick={() => { const n = [...value]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; onChange(n); }} className="rounded bg-paper/90 px-1.5 text-xs disabled:opacity-30">←</button>
+                <button type="button" onClick={() => onChange(value.filter((_, j) => j !== i))} className="rounded bg-paper/90 px-1.5 text-xs text-red-700">Remove</button>
+                <button type="button" disabled={i === value.length - 1} onClick={() => { const n = [...value]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; onChange(n); }} className="rounded bg-paper/90 px-1.5 text-xs disabled:opacity-30">→</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <button type="button" className={btnSecondary} disabled={busy} onClick={() => ref.current?.click()}>
+        {busy ? "Uploading…" : "Add images"}
+      </button>
+      {error && <p className="text-sm text-red-700">{error}</p>}
+      <input ref={ref} type="file" hidden multiple accept="image/*" onChange={(e) => pick(e.target.files)} />
+    </div>
   );
 }
