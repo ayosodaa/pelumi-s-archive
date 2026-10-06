@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Funding Route Finder | Oluwapelumi Samuel</title>
+<meta name="description" content="A free tool that helps Nigerian SME founders decide whether to raise money and which funding route fits their size and stage.">
+<meta property="og:title" content="Funding Route Finder">
+<meta property="og:description" content="A free tool that helps Nigerian SME founders decide whether to raise money and which funding route fits their size and stage.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a transit line runs across the top with one stop per stage. The result reads as a funding ladder, cheapest money at the bottom rung. */
+:root{
+  --bg:#EDF0EA; --surface:#FAFBF7; --ink:#14302A; --muted:#55685F; --line:#C9D2C8;
+  --accent:#E2A019; --accent-ink:#3A2700; --route:#1E7A68; --route-soft:#D5E8E1; --warn:#B4442E; --warn-soft:#F5DDD6; --mid:#8A6D1E; --mid-soft:#F3E8C8;
+  --display:"Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1B18; --surface:#172622; --ink:#E6EEE8; --muted:#9DB1A7; --line:#2C403A;
+  --accent:#F0B43A; --accent-ink:#2A1C00; --route:#4FC1A7; --route-soft:#1D3A33; --warn:#F08C75; --warn-soft:#3A221C; --mid:#E9C46A; --mid-soft:#3A3220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1B18; --surface:#172622; --ink:#E6EEE8; --muted:#9DB1A7; --line:#2C403A;
+  --accent:#F0B43A; --accent-ink:#2A1C00; --route:#4FC1A7; --route-soft:#1D3A33; --warn:#F08C75; --warn-soft:#3A221C; --mid:#E9C46A; --mid-soft:#3A3220; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:880px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.12}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--route)}
+header{padding-block:48px 28px;display:grid;gap:16px}
+h1{font-size:clamp(34px,6vw,58px);font-weight:800;letter-spacing:-.02em}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--accent) 62%);padding-inline:2px}
+.lede{max-width:64ch;color:var(--muted);font-size:18px}
+
+.line{position:relative;display:grid;grid-template-columns:repeat(5,1fr);margin-block:8px 20px}
+.line::before{content:"";position:absolute;left:12px;right:12px;top:11px;height:4px;background:var(--line);border-radius:2px}
+.line .fill{position:absolute;left:12px;top:11px;height:4px;background:var(--route);border-radius:2px;transition:width .4s ease}
+.stop{position:relative;display:grid;gap:6px;justify-items:start;font-size:13px;color:var(--muted);min-width:0;line-height:1.3}
+.stop:last-child{justify-items:end;text-align:right}
+.dot{width:26px;height:26px;border-radius:50%;background:var(--surface);border:4px solid var(--line);position:relative;z-index:1;transition:border-color .3s,background .3s}
+.stop.done .dot{border-color:var(--route);background:var(--route)}
+.stop.now .dot{border-color:var(--accent);background:var(--surface)}
+.stop.now{color:var(--ink);font-weight:600}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,4vw,36px);display:grid;gap:20px}
+.qmeta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.q{font-size:clamp(22px,3.4vw,30px);font-weight:700;letter-spacing:-.01em}
+.why{color:var(--muted);max-width:64ch}
+.opts{display:grid;gap:10px}
+.opt{font:inherit;text-align:left;color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:10px;padding:14px 16px;cursor:pointer;display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;transition:border-color .15s}
+.opt:hover{border-color:var(--route)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt.picked{border-color:var(--route);background:var(--route-soft)}
+.opt .k{font-family:var(--mono);font-size:13px;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line)}
+.opt.picked .k{background:var(--route);color:var(--surface);border-color:var(--route)}
+.opt small{display:block;color:var(--muted);font-size:13px;font-family:var(--mono);margin-top:2px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.btn{font:600 15px var(--body);border-radius:999px;padding:10px 20px;border:2px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid var(--route);outline-offset:2px}
+.score{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+.result{display:grid;gap:28px}
+.verdict{display:grid;gap:12px}
+.verdict h2{font-size:clamp(28px,4.6vw,42px);font-weight:800}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:999px;justify-self:start}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.fact{background:var(--bg);border-radius:10px;padding:14px 16px;display:grid;gap:4px;min-width:0}
+.fact .eyebrow{color:var(--muted)}
+h3{font-size:20px;font-weight:700}
+
+/* ladder: rung 1 at the bottom of the list visually reads top to bottom as order of use */
+.ladder{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.rung{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start;padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
+.rung .n{width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-size:15px;background:var(--bg);color:var(--muted)}
+.rung .body{display:grid;gap:6px;min-width:0}
+.rung .top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
+.rung h4{font-family:var(--display);font-size:17px;margin:0;font-weight:700}
+.rung p{color:var(--muted);font-size:15px}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.st-open .chip{background:var(--route-soft);color:var(--route)}
+.st-proof .chip{background:var(--mid-soft);color:var(--mid)}
+.st-out .chip{background:var(--warn-soft);color:var(--warn)}
+.st-done .chip{background:var(--bg);color:var(--muted)}
+.st-out,.st-done{opacity:.72}
+.st-out h4{text-decoration:line-through;text-decoration-thickness:1px}
+.rung.start{border:2px solid var(--accent);opacity:1}
+.rung.start .n{background:var(--accent);color:var(--accent-ink)}
+.rung.start .chip{background:var(--accent);color:var(--accent-ink)}
+.st-open .n{background:var(--route-soft);color:var(--route)}
+
+.flags{display:grid;gap:10px}
+.flag{background:var(--warn-soft);border-radius:10px;padding:14px 16px;display:grid;gap:4px}
+.flag b{color:var(--warn);font-family:var(--display);font-size:17px}
+.toast{font-family:var(--mono);font-size:12px;color:var(--route)}
+textarea.copybox{width:100%;min-height:160px;font:13px var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:12px}
+
+section.read{padding-block:56px 0;display:grid;gap:20px}
+section.read h2{font-size:clamp(26px,4vw,36px);font-weight:800;max-width:26ch}
+.truths{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.truth{border-top:4px solid var(--accent);padding-top:14px;display:grid;gap:8px;align-content:start;min-width:0}
+.truth h3{font-size:19px}
+.truth p,.story p,.alt p{color:var(--muted)}
+.story{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,4vw,32px);display:grid;gap:14px}
+.story .ledger{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.story .col{border:1px dashed var(--line);border-radius:10px;padding:14px;display:grid;gap:6px;min-width:0}
+.story .col .eyebrow{color:var(--muted)}
+.story .col.good .eyebrow{color:var(--route)}
+.alts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.alt{display:grid;gap:6px;align-content:start;padding:16px;border-radius:10px;background:var(--surface);border:1px solid var(--line);min-width:0}
+.alt .eyebrow{color:var(--accent-ink);background:var(--accent);justify-self:start;padding:2px 8px;border-radius:4px}
+
+.matrix-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+table.matrix{border-collapse:collapse;width:100%;min-width:680px;font-size:14px}
+.matrix th,.matrix td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+.matrix th{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.matrix th:first-child,.matrix td:first-child{text-align:left}
+.matrix td:first-child b{display:block;font-family:var(--display);font-size:15px}
+.matrix td:first-child span{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.matrix tr:last-child td{border-bottom:none}
+.m{display:inline-block;width:14px;height:14px;border-radius:50%}
+.m.open{background:var(--route)} .m.proof{background:transparent;border:3px solid var(--mid)} .m.out{background:transparent;border:2px dashed var(--warn);opacity:.7}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.note{font-size:14px;color:var(--muted);max-width:70ch}
+footer{padding-block:32px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:56px;display:grid;gap:8px}
+@media (max-width:600px){
+  .stop span{display:none}
+  .stop.now span{display:block;position:absolute;top:32px;white-space:nowrap}
+  .stop:nth-child(n+5).now span{right:0}
+  .line{margin-bottom:40px}
+  .story .ledger{grid-template-columns:1fr}
+  .rung{grid-template-columns:32px 1fr;padding:12px}
+  .rung .n{width:32px;height:32px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">A toolkit for Nigerian SME founders</p>
+  <h1>Find the funding route that <em>actually fits</em> your business.</h1>
+  <p class="lede">Outside capital should be the last thing you reach for. This tool walks you through twelve questions, places your business on the SMEDAN size bands, and shows which rungs of the funding ladder you can realistically climb today.</p>
+</header>
+
+<div class="line" id="line" aria-hidden="true">
+  <div class="fill" id="fill"></div>
+  <div class="stop" data-s="0"><div class="dot"></div><span>Know your business</span></div>
+  <div class="stop" data-s="1"><div class="dot"></div><span>Name the real need</span></div>
+  <div class="stop" data-s="2"><div class="dot"></div><span>Try the alternatives</span></div>
+  <div class="stop" data-s="3"><div class="dot"></div><span>Face life after money</span></div>
+  <div class="stop" data-s="4"><div class="dot"></div><span>See your ladder</span></div>
+</div>
+
+<main id="app" class="card" aria-live="polite"></main>
+
+<section class="read" id="ladder">
+  <p class="eyebrow">The principle behind the tool</p>
+  <h2>Treat outside capital as your last resort, and climb the ladder one rung at a time.</h2>
+  <p class="lede">Every rung costs more than the one before it, in money, control or obligations. A founder should use up the cheaper rungs first. Business size also decides which rungs are realistic, because lenders, grant makers and investors each set requirements that very small businesses cannot meet.</p>
+  <div class="legend"><span><i class="m open"></i>This route is realistic at this size.</span><span><i class="m proof"></i>This route opens up with proof and track record.</span><span><i class="m out"></i>This route is usually out of reach at this size.</span></div>
+  <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+  <p class="note">The size bands follow the turnover classification in the National Policy on MSMEs that SMEDAN introduced in 2021, which moved classification from assets to annual turnover. Confirm the current bands with SMEDAN before you rely on them for an application.</p>
+</section>
+
+<section class="read" id="truths">
+  <p class="eyebrow">Before you raise</p>
+  <h2>Fundraising carries four truths that founders often learn too late.</h2>
+  <div class="truths">
+    <div class="truth"><h3>The money does not belong to you.</h3><p>Every naira you raise comes with a lender or an investor who expects it back, with interest or with a share of what you build. You hold it on their behalf.</p></div>
+    <div class="truth"><h3>Raising money will not make you rich.</h3><p>The most likely result of a raise is more debt and more responsibility. Wealth comes later, if the work that follows the raise goes well.</p></div>
+    <div class="truth"><h3>The raise starts the hard part.</h3><p>Reporting, repayments and higher targets arrive with the money. The stress goes up, and the journey only begins on the day the funds land.</p></div>
+    <div class="truth"><h3>Debt is usually the most straightforward outside cash.</h3><p>Grants and equity each come with their own conditions, long timelines and competition. When a business is ready for outside cash, a loan that it can repay is often the most direct route.</p></div>
+  </div>
+  <p class="lede">Raising money is also not a badge of achievement. A founder who grows steadily from revenue has achieved as much as a founder who announces a round, and often keeps more of the business.</p>
+</section>
+
+<section class="read" id="alts">
+  <p class="eyebrow">Ask these questions first</p>
+  <h2>You can often get what you need without raising cash.</h2>
+  <div class="alts">
+    <div class="alt"><p class="eyebrow">Customers</p><h3>Raise money from your own clients.</h3><p>Ask for deposits, take preorders or offer a discount for payment upfront. Your customers can fund the next batch of work.</p></div>
+    <div class="alt"><p class="eyebrow">Sales</p><h3>Pay someone a commission to sell for you.</h3><p>A good sales agent who earns only when they sell can bring in more cash than a loan, and costs you nothing until the money arrives.</p></div>
+    <div class="alt"><p class="eyebrow">Cash flow</p><h3>Collect what customers already owe.</h3><p>Money stuck with debtors is money you already earned. Tighter payment terms can release cash faster than any loan.</p></div>
+    <div class="alt"><p class="eyebrow">Inventory</p><h3>Ask your supplier for credit.</h3><p>A trader who needs stock can negotiate a line of credit with a supplier, take goods now and pay after the goods sell.</p></div>
+    <div class="alt"><p class="eyebrow">Services</p><h3>Negotiate terms with your service providers.</h3><p>Landlords, logistics firms and other providers will sometimes accept staged payments or a share of revenue instead of cash upfront.</p></div>
+    <div class="alt"><p class="eyebrow">Machinery</p><h3>Rent equipment that sits idle elsewhere.</h3><p>Another company may own similar machines that it underuses. A rental agreement lets you learn how much you truly need before you buy.</p></div>
+    <div class="alt"><p class="eyebrow">Competitors</p><h3>Collaborate with a business you compete with.</h3><p>Two similar businesses can share a delivery van, buy stock together for a better price or split a large order that neither could fill alone.</p></div>
+    <div class="alt"><p class="eyebrow">Logistics</p><h3>Share the load with a partner.</h3><p>A partnership for distribution, storage or transport can remove a cost that you would otherwise borrow to cover.</p></div>
+  </div>
+</section>
+
+<section class="read">
+  <p class="eyebrow">A story from the field</p>
+  <h2>A cheap loan solved the wrong problem for one food business.</h2>
+  <div class="story">
+    <p>During COVID, I helped a small food processing business apply for an equipment loan. The interest rate was below ten percent, which looked excellent on paper. The loan paid for dryers and other machinery.</p>
+    <p>Cash flow was already tight. Customers owed the business around ₦500,000 in unpaid invoices, and the new repayments squeezed what little cash remained. Looking back, the business needed restructuring far more than it needed machines.</p>
+    <div class="ledger">
+      <div class="col"><p class="eyebrow">What the loan bought</p><p>The loan bought new dryers and processing machinery, which increased capacity that the business could not yet sell.</p></div>
+      <div class="col good"><p class="eyebrow">What would have helped more</p><p>The founder needed to prove the product, set the right price, collect debts and open new retail outlets. If cash was unavoidable, a small delivery vehicle would have served her far better.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>A toolkit by Oluwapelumi Samuel. The results start a conversation with an adviser and do not replace financial advice.</p>
+</footer>
+</div>
+
+<script>
+/* Size bands: SMEDAN National Policy on MSMEs (2021), annual turnover. Edit here if the bands change. */
+const SIZES = [
+  {id:"nano",   name:"Nano or homestead enterprise", band:"Under ₦3m a year",        article:"a nano or homestead enterprise"},
+  {id:"micro",  name:"Micro enterprise",            band:"₦3m to ₦25m a year",       article:"a micro enterprise"},
+  {id:"small",  name:"Small enterprise",            band:"₦25m to ₦100m a year",     article:"a small enterprise"},
+  {id:"medium", name:"Medium enterprise",           band:"₦100m to ₦1bn a year",     article:"a medium enterprise"},
+  {id:"large",  name:"Large enterprise",            band:"Above ₦1bn a year",        article:"a large enterprise"}
+];
+const SIZE_NOTE = {
+  nano:"At this size, formal loans, equity and most grants are not realistic, because their requirements assume records and assets that you do not yet have. Your money should come from sales, customers, suppliers and partners. Entrepreneurship and preincubation programmes can add training and small starter support.",
+  micro:"At this size, formal loans are rarely sensible and traditional equity and most grants remain out of reach. Focus on sales, customer prepayments, supplier terms and partnerships. Preincubation and entrepreneurship programmes are the most realistic outside support.",
+  small:"At this size, you have enough proof to compete for some grants and to approach friends and family or low interest loans. Bank loans are possible but only in small amounts. Equity investment is still uncommon.",
+  medium:"At this size, lenders can offer larger loans and your track record supports grant applications. Equity becomes possible when you can show a clear growth plan.",
+  large:"At this size, every rung is open to you, including large loan facilities and equity investment. The ladder still applies, because cheaper money remains cheaper."
+};
+
+/* The ladder, from cheapest to most demanding. status per size: open, proof, out */
+const RUNGS = [
+  {id:"sales", name:"Sell more and raise money from your customers", gate:{nano:"open",micro:"open",small:"open",medium:"open",large:"open"},
+   text:"Collect what you are owed, take deposits and preorders, and pay a sales agent on commission so that customers fund your growth."},
+  {id:"supply", name:"Negotiate with suppliers and service providers", gate:{nano:"open",micro:"open",small:"open",medium:"open",large:"open"},
+   text:"Ask for stock on credit, staged payments or longer terms so that you pay after you earn."},
+  {id:"partner", name:"Partner with other businesses, including competitors", gate:{nano:"open",micro:"open",small:"open",medium:"open",large:"open"},
+   text:"Rent idle machinery, share logistics, buy stock together or split large orders."},
+  {id:"programmes", name:"Join programmes and apply for grants", gate:{nano:"open",micro:"open",small:"proof",medium:"open",large:"open"},
+   text:{nano:"Entrepreneurship and preincubation programmes give training, networks and sometimes small starter support. Most grants will ask for more than you have yet.",
+         micro:"Entrepreneurship and preincubation programmes give training, networks and sometimes small starter support. Most grants will ask for more than you have yet.",
+         small:"Grants and business competitions open up once you can show sales records and a clear use of funds.",
+         medium:"Grants suit specific projects, but expect long timelines, strict reporting and strong competition.",
+         large:"Grants suit specific projects, but expect long timelines, strict reporting and strong competition."}},
+  {id:"family", name:"Raise from friends and family or take a low interest loan", gate:{nano:"out",micro:"out",small:"open",medium:"open",large:"open"},
+   text:{nano:"Money from people close to you puts relationships at risk while the business is still unproven.",micro:"Money from people close to you puts relationships at risk while the business is still unproven.",
+         small:"Friends and family equity or a low interest development loan can work, if you agree the terms in writing.",medium:"Low interest loans from development lenders can support specific expansion plans.",large:"Low interest loans from development lenders can support specific expansion plans."}},
+  {id:"debt", name:"Borrow from a bank or a lender", gate:{nano:"out",micro:"out",small:"proof",medium:"open",large:"open"},
+   text:{nano:"Formal loans demand collateral, records and steady cash flow that businesses at this size rarely have.",micro:"Formal loans demand collateral, records and steady cash flow that businesses at this size rarely have.",
+         small:"A small loan is possible if repayments come comfortably from existing cash flow.",medium:"You can access larger loans and asset finance. Debt is usually the most straightforward outside cash.",large:"You can negotiate large facilities on good terms. Debt is usually the most straightforward outside cash."}},
+  {id:"equity", name:"Sell a share of the business to investors", gate:{nano:"out",micro:"out",small:"out",medium:"proof",large:"open"},
+   text:{nano:"Traditional equity investors rarely back businesses at this size.",micro:"Traditional equity investors rarely back businesses at this size.",small:"Equity investors rarely back small enterprises unless growth is unusually fast.",
+         medium:"Equity is possible with a clear growth plan, clean accounts and a willingness to share control.",large:"Equity suits expansion that cash flow and debt cannot fund, at the cost of shared ownership."}}
+];
+const GATE_LABEL = {open:"Realistic now", proof:"Needs proof first", out:"Out of reach now", done:"Already tried", start:"Start here"};
+
+const NEED_MOVE = {
+  stock:"You need inventory, so your first conversation should be with your supplier about taking goods on credit.",
+  equip:"You need equipment, so look for a business with idle machinery that you can rent before you think about buying.",
+  gap:"You need cash to cover running costs, so start by collecting debts and taking customer deposits, then find out why costs run ahead of sales.",
+  growth:"You need money to grow, so test whether customer preorders or a commission sales agent can fund the first stage of that growth."
+};
+
+const Q = [
+  {s:0,size:true,q:"Roughly how much does your business sell in a year?",why:"Size decides which funding routes are realistic. These bands follow SMEDAN's turnover classification.",
+   o:SIZES.map(z=>[z.band,{},null,z.name])},
+  {s:0,q:"Picture the business five years from now. Which picture feels most like you?",why:"A lifestyle business can earn very well, yet fundraising usually forces you to grow beyond yourself.",o:[
+    ["I still run it myself with a few trusted hands, and it gives me a good income and my freedom.",{A:3}],
+    ["It is a solid company with a team and a manager, and it runs without me in every decision.",{R:2,D:1}],
+    ["It operates in several cities or countries and is many times bigger than today.",{R:3,E:2}]]},
+  {s:0,q:"How do you feel about answering to someone else about how you spend money?",why:"Every lender and investor will ask for reports. Some will ask for a say.",o:[
+    ["I would rather not. Freedom is the reason I started.",{A:3}],
+    ["I can accept fixed repayments as long as I keep control.",{R:1,D:2}],
+    ["I welcome partners who push me and sit at the table with me.",{R:1,E:2}]]},
+  {s:1,q:"Finish this sentence: I want to raise money so that I can...",why:"The purpose of the money tells you whether you need cash or something else.",need:true,o:[
+    ["buy inventory or raw materials.",{},null,null,"stock"],
+    ["buy machinery or equipment.",{},null,null,"equip"],
+    ["pay salaries and bills while sales catch up.",{B:3},"cover",null,"gap"],
+    ["enter a new market or scale a product that customers already love.",{R:2},null,null,"growth"]]},
+  {s:1,q:"How does cash move through your business today?",why:"A loan added to weak cash flow usually makes the cash flow weaker.",o:[
+    ["Customers pay late, and a lot of money sits with debtors.",{B:3},"debtors"],
+    ["Sales are steady and I have a predictable surplus each month.",{R:2,A:1,D:1}],
+    ["Revenue grows quickly, but every naira goes straight back into growth.",{R:2,E:1}],
+    ["We have very little revenue so far.",{B:2}]]},
+  {s:1,q:"Have you proven that customers will pay your price again and again?",why:"Money cannot fix a product or a price that the market has not accepted.",o:[
+    ["Yes. I have repeat customers and clear margins.",{R:2}],
+    ["Partly. Some customers return, but my pricing is still uncertain.",{B:2}],
+    ["Not yet.",{B:3},"unproven"]]},
+  {s:2,rung:"sales",q:"Have you tried to raise money from your own customers?",why:"Deposits, preorders, faster collection and commission sales agents turn customers into your first funders.",o:[
+    ["No. I have not tried any of these yet.",{},null,null,null,"start"],
+    ["I have tried one or two, but there is more I could do.",{},null,null,null,"open"],
+    ["Yes. I have pushed sales and collections as far as they will go.",{R:1},null,null,null,"done"]]},
+  {s:2,rung:"supply",q:"Have you asked suppliers or service providers for better terms?",why:"Credit from a supplier is funding that costs you a conversation.",o:[
+    ["No. I had not thought of that.",{},null,null,null,"start"],
+    ["I asked once, but I could negotiate harder or ask others.",{},null,null,null,"open"],
+    ["Yes. I already use every credit term I can get.",{R:1},null,null,null,"done"]]},
+  {s:2,rung:"partner",q:"Have you looked for a partner, even a competitor, to share costs or equipment?",why:"Shared machinery, shared delivery and joint buying all reduce the cash you need.",o:[
+    ["No. I have not explored partnerships.",{},null,null,null,"start"],
+    ["I have a few ideas but have not acted on them.",{},null,null,null,"open"],
+    ["Yes. I have explored every partnership that makes sense.",{R:1},null,null,null,"done"]]},
+  {s:3,q:"Imagine the money lands tomorrow. What changes about your work the next day?",why:"The raise is the start of the hard part, not the finish line.",o:[
+    ["I can finally relax a little.",{B:2},"relax"],
+    ["I work harder, report more and track every repayment.",{R:2,D:1}],
+    ["I hire and build faster with my investors involved.",{R:2,E:1}]]},
+  {s:3,q:"Could your business repay a loan from its own cash if sales dropped for three months?",why:"Lenders get paid in good months and bad months alike.",o:[
+    ["Yes, comfortably.",{R:2,D:2}],
+    ["Only just.",{B:1}],
+    ["No, it could not.",{B:2},"norepay"]]},
+  {s:3,q:"Which sentence sounds most like your real reason for raising?",why:"Raising money is a tool. It is not a status symbol.",o:[
+    ["Raising money would show people that my business is serious.",{B:2},"status"],
+    ["The money unlocks a specific plan with numbers I can show.",{R:2}],
+    ["I am not sure yet. Everyone around me seems to be raising.",{A:1,B:2},"status"]]}
+];
+
+const VERDICTS = {
+  A:{title:"Keep growing from your own revenue.",text:"You value freedom and control, and outside money would add obligations that pull against the reasons you started. Use the lower rungs of the ladder to grow, and protect your independence."},
+  B:{title:"Fix the business before you fund it.",text:"Outside money would probably make your current problems bigger. Your answers point to cash flow, pricing or proof of demand as the real constraint. Work on the lower rungs and restructure first."},
+  R:{title:"You can look beyond your own resources, once the cheaper rungs are used.",text:"Your business shows the proof and the appetite that outside money needs. Start with the first open rung below and only climb higher when the cheaper options are exhausted."}
+};
+const FLAGS = {
+  cover:["You want the money to cover running costs.","A loan that pays for salaries and bills buys time but does not fix the gap between costs and sales. Find the cause of the gap first."],
+  debtors:["Customers are holding your cash.","Collecting what you are owed is the cheapest money you will ever raise. A loan on top of unpaid invoices often deepens the squeeze."],
+  unproven:["Demand is not yet proven.","Get the product and the price right before you take on money that expects returns."],
+  relax:["You expect the money to bring relief.","Raised money brings more pressure, not less. Plan for repayments and reporting from the first week."],
+  status:["The raise is partly about how it looks.","Raising money is not a badge of achievement. Raise only when a specific plan needs the money."],
+  norepay:["Your cash flow could not carry a loan through a bad quarter.","Lenders expect repayment in bad months too. Build a cash buffer before you consider debt."],
+  smallloan:["Your business is too small for a formal loan to make sense.","Formal lenders ask for collateral, records and steady cash flow that businesses at your size rarely have. A loan taken under pressure can sink a micro business."]
+};
+const STAGES = ["Know your business","Name the real need","Try the alternatives","Face life after money"];
+const KEYS = "ABCDE";
+
+let state = {i:0, answers:Array(Q.length).fill(null)};
+
+const app = document.getElementById("app");
+const pick = v => typeof v==="string" ? v : null;
+const textFor = (r,size) => typeof r.text==="string" ? r.text : r.text[size];
+
+function setLine(stage, pct){
+  document.querySelectorAll(".stop").forEach(el=>{
+    const s=+el.dataset.s; el.classList.toggle("done", s<stage); el.classList.toggle("now", s===stage);
+  });
+  const line=document.getElementById("line"); const w=line.clientWidth-24;
+  document.getElementById("fill").style.width = Math.max(0,w*pct)+"px";
+}
+
+function go(n){ state.i=n; n>=Q.length?renderResult():renderQ(); }
+
+function renderQ(){
+  const i=state.i, item=Q[i], picked=state.answers[i];
+  const answered = state.answers.filter(a=>a!==null).length;
+  setLine(item.s, i/Q.length);
+  app.innerHTML = `
+    <div class="qmeta"><span>Stage ${item.s+1} of 4. ${STAGES[item.s]}</span><span>Question ${i+1} of ${Q.length}</span></div>
+    <h2 class="q">${item.q}</h2>
+    <p class="why">${item.why}</p>
+    <div class="opts" role="radiogroup" aria-label="Answer options">
+      ${item.o.map((o,j)=>`<button class="opt${picked===j?" picked":""}" role="radio" aria-checked="${picked===j}" data-j="${j}" id="q${i}o${j}"><span class="k">${KEYS[j]}</span><span>${o[0]}${o[3]?`<small>${o[3]}</small>`:""}</span></button>`).join("")}
+    </div>
+    <div class="nav">
+      <button class="btn" id="back" ${i===0?"disabled":""}>Go back</button>
+      <span class="score">${answered} of ${Q.length} answered</span>
+      <button class="btn primary" id="next" ${picked===null?"disabled":""}>${i===Q.length-1?"Show my ladder":"Next question"}</button>
+    </div>`;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    state.answers[i]=+b.dataset.j; renderQ();
+    setTimeout(()=>go(i+1),180);
+  });
+  document.getElementById("back").onclick=()=>go(i-1);
+  document.getElementById("next").onclick=()=>go(i+1);
+}
+
+function compute(){
+  const sc={A:0,B:0,R:0,D:0,E:0}, flags=new Set(), tried={};
+  let size="micro", need=null;
+  state.answers.forEach((a,i)=>{
+    if(a===null) return; const item=Q[i], o=item.o[a];
+    if(item.size) size=SIZES[a].id;
+    for(const k in o[1]) sc[k]+=o[1][k];
+    if(o[2]) flags.add(o[2]);
+    if(o[4]) need=o[4];
+    if(item.rung) tried[item.rung]=o[5];
+  });
+  if((size==="nano"||size==="micro")) flags.add("smallloan");
+  if(size==="nano"||size==="micro") flags.delete("norepay");
+  const order=["B","A","R"]; let verdict=order.reduce((best,k)=>sc[k]>sc[best]?k:best,"B");
+  const rungs = RUNGS.map(r=>{
+    let st=r.gate[size];
+    if(tried[r.id]==="done") st="done";
+    if(verdict!=="R" && (r.id==="debt"||r.id==="equity") && st!=="out") st="proof";
+    return {...r, st, text:textFor(r,size)};
+  });
+  let startIdx = rungs.findIndex(r=>r.st==="open");
+  if(startIdx<0) startIdx = rungs.findIndex(r=>r.st==="proof");
+  return {sc,flags,size,need,verdict,rungs,startIdx};
+}
+
+let lastSummary="";
+function renderResult(){
+  state.i = Q.length; setLine(4,1);
+  const r=compute(), size=SIZES.find(z=>z.id===r.size), v=VERDICTS[r.verdict];
+  const lean = r.verdict==="R" ? (r.sc.E>r.sc.D ? "When you do reach for outside money, your answers lean toward equity partners more than lenders." : "When you do reach for outside money, your answers lean toward debt, which is usually the most straightforward route.") : "";
+  const flagHtml=[...r.flags].map(f=>`<div class="flag"><b>${FLAGS[f][0]}</b><span>${FLAGS[f][1]}</span></div>`).join("");
+  app.innerHTML=`
+  <div class="result">
+    <div class="verdict">
+      <span class="badge">Here is your verdict</span>
+      <h2>${v.title}</h2>
+      <p class="why">${v.text} ${lean}</p>
+    </div>
+    <div class="facts">
+      <div class="fact"><p class="eyebrow">Your business size</p><p>Your business counts as ${size.article} with annual turnover of ${size.band.replace(" a year","").replace(/^U/,"u").replace(/^A/,"a")}. ${SIZE_NOTE[r.size]}</p></div>
+      ${r.need?`<div class="fact"><p class="eyebrow">Your first move</p><p>${NEED_MOVE[r.need]}</p></div>`:""}
+    </div>
+    <div style="display:grid;gap:12px">
+      <h3>Your funding ladder runs from the cheapest money at the top to the most demanding at the bottom.</h3>
+      <ol class="ladder">${r.rungs.map((g,j)=>`<li class="rung st-${g.st}${j===r.startIdx?" start":""}"><span class="n">${j+1}</span><div class="body"><div class="top"><h4>${g.name}</h4><span class="chip">${j===r.startIdx?GATE_LABEL.start:GATE_LABEL[g.st]}</span></div><p>${g.text}</p></div></li>`).join("")}</ol>
+    </div>
+    ${r.flags.size?`<div style="display:grid;gap:12px"><h3>The tool noticed these warning signs in your answers.</h3><div class="flags">${flagHtml}</div></div>`:""}
+    <div class="nav">
+      <button class="btn" id="review">Review my answers</button>
+      <span style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="toast" id="toast"></span><button class="btn" id="copy">Copy my result</button><button class="btn primary" id="restart">Start again</button></span>
+    </div>
+    <div id="copyfallback" hidden><p class="why">Your browser blocked copying. Select the text below and copy it yourself.</p><textarea class="copybox" id="copytext" readonly></textarea></div>
+  </div>`;
+  lastSummary = [
+    "My Funding Route Finder result",
+    "",
+    "Verdict: "+v.title,
+    "Size: "+size.name+" ("+size.band+")",
+    r.need?("First move: "+NEED_MOVE[r.need]):"",
+    "",
+    "My funding ladder:",
+    ...r.rungs.map((g,j)=>`${j+1}. ${g.name} (${j===r.startIdx?GATE_LABEL.start:GATE_LABEL[g.st]})`),
+    r.flags.size?"\nWarning signs:\n"+[...r.flags].map(f=>"• "+FLAGS[f][0]).join("\n"):""
+  ].filter(x=>x!=="" || true).join("\n").replace(/\n{3,}/g,"\n\n");
+  document.getElementById("restart").onclick=()=>{state={i:0,answers:Array(Q.length).fill(null)};renderQ();app.scrollIntoView({behavior:"smooth",block:"start"});};
+  document.getElementById("review").onclick=()=>go(0);
+  document.getElementById("copy").onclick=()=>{
+    const t=document.getElementById("toast");
+    const fallback=()=>{const box=document.getElementById("copyfallback");box.hidden=false;const ta=document.getElementById("copytext");ta.value=lastSummary;ta.focus();ta.select();};
+    try{ navigator.clipboard.writeText(lastSummary).then(()=>{t.textContent="Your result is copied.";},fallback); }catch(e){ fallback(); }
+  };
+}
+
+function renderMatrix(){
+  const head=`<tr><th>Business size</th>${RUNGS.map((r,j)=>`<th>${j+1}. ${["Customers","Suppliers","Partners","Programmes","Friends, family, soft loans","Bank loans","Equity"][j]}</th>`).join("")}</tr>`;
+  const rows=SIZES.map(z=>`<tr><td><b>${z.name}</b><span>${z.band}</span></td>${RUNGS.map(r=>{const g=r.gate[z.id];return `<td><i class="m ${g}" title="${GATE_LABEL[g]}" aria-label="${GATE_LABEL[g]}"></i></td>`}).join("")}</tr>`).join("");
+  document.getElementById("matrix").innerHTML=`<thead>${head}</thead><tbody>${rows}</tbody>`;
+}
+
+document.addEventListener("keydown",e=>{
+  if(state.i>=Q.length || e.metaKey || e.ctrlKey || e.target.tagName==="TEXTAREA") return;
+  const j=KEYS.toLowerCase().indexOf(e.key.toLowerCase());
+  if(j>-1 && j<Q[state.i].o.length) document.getElementById(`q${state.i}o${j}`)?.click();
+});
+window.addEventListener("resize",()=>{ state.i>=Q.length?setLine(4,1):setLine(Q[state.i].s,state.i/Q.length); });
+renderMatrix();
+go(state.i);
+</script>
+</body>
+</html>
